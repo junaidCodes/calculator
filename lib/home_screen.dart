@@ -417,6 +417,7 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
           subPress = true;
           previousOperator = '+';
 
+
         } else {
           if (userInput.isNotEmpty && '+-x÷'.contains(userInput[userInput.length - 1])) {
             // If the previous character is an operator, replace it with '-'
