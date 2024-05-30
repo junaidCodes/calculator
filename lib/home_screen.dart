@@ -1,5 +1,6 @@
-import 'dart:developer';
 
+
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
@@ -14,6 +15,7 @@ class CalulatorHomeScreen extends StatefulWidget {
 class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
   var userInput = '';
   var outPut = '';
+ final FocusNode focusNode = FocusNode();
 
   List<String> buttonText = [
     "AC",
@@ -34,7 +36,7 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
     "+",
     "0",
     ".",
-    "+",
+    "+-",
     "="
   ];
   bool mulPress = true;
@@ -42,10 +44,28 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
   bool subPress = true;
   bool addPress = true;
   bool dividePress = true;
+  bool pPress = true;
+
+
+
 
   bool isDarkModeEnabled = false;
   bool hide = false;
   var outPutSize = 34.0;
+  TextEditingController controller = TextEditingController();
+
+  TextEditingController _controller = TextEditingController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    _controller.text = outPut;
+    setState(() {
+      // onPress();
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,53 +87,71 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
                 end: Alignment.bottomLeft,
                 colors: isDarkModeEnabled
                     ? [
-                  const Color(0xffe98a7f),
-                  Colors.white,
-                ]
+                        const Color(0xffe98a7f),
+                        Colors.white,
+                      ]
                     : [
-                  Color(0xff344488),
-                  Colors.blue,
-                ],
+                        const Color(0xff344488),
+                        Colors.blue,
+                      ],
               ),
             ),
             child: Column(
               // crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-
-
                 Align(
                     alignment: Alignment.bottomLeft,
                     child: Padding(
-                      padding: EdgeInsets.only(top: 25),
+                      padding: const EdgeInsets.only(top: 25),
                       child: Switch(
                           value: isDarkModeEnabled,
                           onChanged: (value) {
                             setState(() {
                               isDarkModeEnabled = value;
+
                             });
                           }),
                     )),
-                Align( alignment: Alignment.bottomRight,
+                // TextFormField(
+                //   cursorColor: Colors.white,
+                //   showCursor: true
+                //   ,
+                //   onTap: (){
+                //
+                //     FocusScope.of(context).requestFocus(focusNode);
+                //   },
+                //   controller: _controller,
+                //
+                //   onChanged: (value) {
+                //
+                //     setState(() {
+                //
+                //       onPress();
+                //     });
+                //   },
+                //   // initialValue: userInput.toString(),
+                // ),
+                Align(
+                  alignment: Alignment.bottomRight,
                   child: Padding(
-                    padding: EdgeInsets.only(right: 10),
-                    child:
-
-                    Text(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Text(
                       userInput,
-                      style: TextStyle(fontSize: 30, color: Colors.white),
+                      style: const TextStyle(fontSize: 30, color: Colors.white),
                       textAlign: TextAlign.right,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+                      overflow: TextOverflow.clip,
+                      maxLines: 1,
                     ),
                   ),
                 ),
                 Align(
                   alignment: Alignment.bottomRight,
-                  child: Padding( padding: EdgeInsets.only(right: 10),
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 10),
                     child: Text(
                       outPut,
-                      style: TextStyle(fontSize: 52, color: Colors.white),
+                      style: const TextStyle(fontSize: 52, color: Colors.white),
                       textAlign: TextAlign.right,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
@@ -127,45 +165,40 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
                       shrinkWrap: false,
                       itemCount: 20,
                       gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 4,
                         childAspectRatio: 1.01,
                       ),
                       itemBuilder: (BuildContext context, index) {
-                        return InkWell(
+                        return GestureDetector(
                           onTap: () {
-                            setState(() {
-                              data(buttonText[index].toString());
-                            });
-                            print(buttonText[index].toString());
-                          },
-                          child: GestureDetector(
-                            onTap: () {
-                              inputProcess(index);
-                              // obj.inputProcess(index);
 
-                              setState(() {});
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(5),
-                              decoration: BoxDecoration(
+
+
+                            inputProcess(index);
+                            // obj.inputProcess(index);
+
+                            setState(() {});
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
                                 // color: Colors.white,
-                                  border:
-                                  Border.all(color: Colors.grey, width: 1)),
-                              // color: Colors.green,
-                              child: Center(
-                                  child: Text(
-                                    buttonText[index],
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 40),
-                                  )),
-                            ),
+                                border:
+                                    Border.all(color: Colors.grey, width: 1)),
+                            // color: Colors.green,
+                            child: Center(
+                                child: Text(
+                              buttonText[index],
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 40),
+                            )),
                           ),
                         );
                         //
                       }),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 3,
                 ),
               ],
@@ -175,261 +208,222 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
       ),
     );
   }
+void inputOutputClear(){
+  userInput = '';
+  outPut = '';
+}
+void setOpFalse(){
+  subPress = false;
+  dividePress = false;
+  mulPress = false;
+  addPress = false;
+}
 
-  void data(String value) {
-    //myController= value;
-  }
-
-  void onStateChanged(bool isDarkModeEnabled) {
-    setState(() {
-      this.isDarkModeEnabled = isDarkModeEnabled;
-    });
-  }
   String previousOperator = '';
   void inputProcess(int index) {
     switch (index) {
       case 0:
-        userInput = '';
-        outPut = '';
+        inputOutputClear();
+
         addPress = true;
         subPress = true;
         dividePress = true;
         mulPress = true;
         dotPress = false;
+        _controller.text = '';
         break;
 
       case 1:
         userInput = userInput.substring(0, userInput.length - 1).toString();
-        subPress = false;
-        dividePress= false;
-        mulPress = false;
-        addPress = false;
+       setOpFalse();
 
         break;
 
       case 2:
-        userInput += '%';
+
+        double doubleValue = double.parse(userInput);
+        doubleValue = doubleValue * 0.01;
+
+        outPut = doubleValue.toString();
+        if(userInput.isNotEmpty){
+
+            userInput += '%';
+
+        }
+
         break;
 
       case 3:
-        if (userInput.isNotEmpty && '+-x'.contains(userInput[userInput.length - 1])) {
-
-          userInput = userInput.substring(0, userInput.length - 1) + '÷';
+        if (outPut.isNotEmpty) {
+          userInput = '$outPut÷';
+          outPut = '';
           dividePress = true;
-          previousOperator = '÷';
-          log("if this");
+          // previousOperator = '÷';
         } else {
-          log("else this");
-
-          if(userInput.isNotEmpty && !dividePress ){
-
-            userInput += '÷';
-            dividePress = true;
-
+          if (userInput.isNotEmpty &&
+              '+-x÷'.contains(userInput[userInput.length - 1])) {
+            // If the previous character is an operator, replace it with '-'
+            userInput = '${userInput.substring(0, userInput.length - 1)}÷';
+            // previousOperator = '÷';
+          } else {
+            if (userInput.isNotEmpty) {
+              userInput += '÷';
+            }
+            // previousOperator = '÷';
           }
-          previousOperator = '÷';
         }
-
 
         break;
 
-
       case 4:
-        dividePress = false;
-        subPress = false;
-        addPress = false;
-        mulPress = false;
+
+        setOpFalse();
 
         userInput += '7';
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          userInput = '';
-          outPut = '';
+         inputOutputClear();
           userInput += '7';
         }
 
         break;
 
       case 5:
-        dividePress = false;
-        subPress = false;
-        addPress = false;
-
-        mulPress = false;
+        setOpFalse();
         userInput += '8';
+        _controller.text = userInput;
 
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          userInput = '';
-          outPut = '';
+          inputOutputClear();
+
           userInput += '8';
         }
 
         break;
       case 6:
-        mulPress = false;
-        dividePress = false;
-        subPress = false;
-        addPress = false;
+        setOpFalse();
         userInput += '9';
+        _controller.text = userInput;
+
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          userInput = '';
-          outPut = '';
+          inputOutputClear();
+
           userInput += '9';
         }
         break;
       case 7:
-        if (userInput.isNotEmpty && '+-x÷'.contains(userInput[userInput.length - 1])) {
-
-          userInput = userInput.substring(0, userInput.length - 1) + 'x';
+        if (outPut.isNotEmpty) {
+          userInput = '${outPut}x';
+          outPut = '';
           mulPress = true;
-          previousOperator = 'x';
-
+          // previousOperator = 'x';
         } else {
-
-
-          if(userInput.isNotEmpty && !mulPress ){
-
-            userInput += 'x';
-            mulPress = true;
-
+          if (userInput.isNotEmpty &&
+              '+-x÷'.contains(userInput[userInput.length - 1])) {
+            userInput = '${userInput.substring(0, userInput.length - 1)}x';
+            // previousOperator = 'x';
+          } else {
+            if (userInput.isNotEmpty) {
+              userInput += 'x';
+            }
+            // previousOperator = 'x';
           }
-          previousOperator = '÷';
         }
-        // if (outPut.isNotEmpty) {
-        //   userInput = outPut + 'x';
-        //   outPut = '';
-        //   mulPress = true;
-        // } else {}
-        // if (!mulPress) {
-        //   mulPress = true;
-        //   userInput += 'x';
-        //   dotPress = false;
-        // }
 
         break;
       case 8:
-        dividePress = false;
-        subPress = false;
-        addPress = false;
-        mulPress = false;
+
+
+        setOpFalse();
         userInput += '4';
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          userInput = '';
-          outPut = '';
+          inputOutputClear();
+
           userInput += '4';
         }
         break;
       case 9:
-        dividePress = false;
-        subPress = false;
-        addPress = false;
-        mulPress = false;
+        setOpFalse();
         userInput += '5';
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          userInput = '';
-          outPut = '';
+          inputOutputClear();
+
           userInput += '5';
         }
         break;
       case 10:
-        dividePress = false;
-        subPress = false;
-        addPress = false;
-        mulPress = false;
+        setOpFalse();
         userInput += '6';
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          userInput = '';
-          outPut = '';
+          inputOutputClear();
+
           userInput += '6';
         }
         break;
       case 11:
-
         if (outPut.isNotEmpty) {
-          userInput = outPut + '-';
+          userInput = '$outPut-';
           outPut = '';
           subPress = true;
-          previousOperator = '-';
+          // previousOperator = '-';
         } else {
-          if (userInput.isNotEmpty && '+-x÷'.contains(userInput[userInput.length - 1])) {
+          if (userInput.isNotEmpty &&
+              '+-x÷'.contains(userInput[userInput.length - 1])) {
             // If the previous character is an operator, replace it with '-'
-            userInput = userInput.substring(0, userInput.length - 1) + '-';
-            previousOperator = '-';
+            userInput = '${userInput.substring(0, userInput.length - 1)}-';
+            // previousOperator = '-';
           } else {
-            if(userInput.isNotEmpty) {
+            if (userInput.isNotEmpty) {
               userInput += '-';
-
             }
-            previousOperator = '-';
+            // previousOperator = '-';
           }
         }
         break;
       case 12:
-        dividePress = false;
-        subPress = false;
-        addPress = false;
-        mulPress = false;
+        setOpFalse();
         userInput += '1';
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          userInput = '';
-          outPut = '';
+          inputOutputClear();
+
           userInput += '1';
         }
         break;
       case 13:
-        dividePress = false;
-        subPress = false;
-        addPress = false;
-        mulPress = false;
+        setOpFalse();
         userInput += '2';
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          userInput = '';
-          outPut = '';
+          inputOutputClear();
+
           userInput += '2';
         }
         break;
       case 14:
-        dividePress = false;
-        subPress = false;
-        addPress = false;
-        mulPress = false;
+        setOpFalse();
         userInput += '3';
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          userInput = '';
-          outPut = '';
+          inputOutputClear();
+
           userInput += '3';
         }
 
         break;
       case 15:
-        // if (outPut.isNotEmpty) {
-        //   userInput = outPut + '+';
-        //   outPut = '';
-        //   addPress = true;
-        // } else {}
-        // if (!addPress) {
-        //   addPress = true;
-        //   userInput += '+';
-        //   dotPress = false;
-        // }
         if (outPut.isNotEmpty) {
-          userInput = outPut + '+';
+          userInput = '$outPut+';
           outPut = '';
           subPress = true;
-          previousOperator = '+';
-
 
         } else {
-          if (userInput.isNotEmpty && '+-x÷'.contains(userInput[userInput.length - 1])) {
+          if (userInput.isNotEmpty &&
+              '+-x÷'.contains(userInput[userInput.length - 1])) {
             // If the previous character is an operator, replace it with '-'
-            userInput = userInput.substring(0, userInput.length - 1) + '+';
-            previousOperator = '+';
+            userInput = '${userInput.substring(0, userInput.length - 1)}+';
 
           } else {
-            if(userInput.isNotEmpty){
+            if (userInput.isNotEmpty) {
               userInput += '+';
             }
 
-            previousOperator = '+';
 
           }
         }
@@ -439,8 +433,8 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
         mulPress = false;
         userInput += '0';
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          userInput = '';
-          outPut = '';
+          inputOutputClear();
+
           userInput += '0';
         }
 
@@ -451,57 +445,82 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
           dotPress = true;
         }
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          userInput = '';
-          outPut = '';
+          inputOutputClear();
+
           userInput += '0.';
         }
 
         break;
       case 18:
+        if(outPut.isNotEmpty){
 
-        print("object");
+          int a  = int.parse(outPut);
+          a = -1 * a;
+
+          outPut = a.toString();
+
+
+        }
+        // print("object");
         break;
 
       default:
         hide = true;
-        onPress(index);
+        onPress();
+        // _controller.text = outPut;
+
 
         break;
     }
   }
 
-  void onPress(value) {
+  void onPress() {
     String replace = userInput;
     replace = userInput
         .replaceAll(
-      'x',
-      '*',
-    )
+          'x',
+          '*',
+        )
         .replaceAll('÷', '/');
 
-    Parser p = Parser();
-    Expression exp = p.parse(replace);
+    debugPrint("userInput $userInput");
 
-    ContextModel contextModel = ContextModel();
-    double evaluate = exp.evaluate(EvaluationType.REAL, contextModel);
+    try {
+      RegExp regex = RegExp(r"[+\-*/]$");
+      if (regex.hasMatch(replace))
+      {
+        replace = replace.substring(0, replace.length - 1);
+      }
+      debugPrint("replace $replace");
 
-    if (evaluate % 1 == 0) {
-      outPut = evaluate.toInt().toString(); // Convert to int and then to string
-    } else {
-      outPut =
-          evaluate.toStringAsFixed(2); // Limiting output to 2 decimal places
+      Parser p = Parser();
+      Expression exp = p.parse(replace);
+      debugPrint("exp $exp");
+
+      ContextModel contextModel = ContextModel();
+      double evaluate = exp.evaluate(EvaluationType.REAL, contextModel);
+
+      if (evaluate % 1 == 0) {
+        outPut = evaluate.toInt().toString(); // Convert to int and then to string
+      } else {
+        outPut =
+            evaluate.toStringAsFixed(2); // Limiting output to 2 decimal places
+      }
+      if (outPut.endsWith('.0')) {
+        outPut = outPut.substring(0, outPut.length - 2);
+
+        userInput = outPut;
+
+        userInput = '';
+        mulPress = true;
+        dividePress = true;
+        subPress = true;
+        addPress = true;
+      } else {}
     }
-    if (outPut.endsWith('.0')) {
-      outPut = outPut.substring(0, outPut.length - 2);
-
-      userInput = outPut;
-
-      userInput = '';
-      mulPress = true;
-      dividePress = true;
-      subPress = true;
-      addPress = true;
-    } else {}
+    catch(e) {
+      debugPrint("exception $e");
+    }
 
     setState(() {});
   }
