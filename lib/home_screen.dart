@@ -1,5 +1,3 @@
-
-
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -15,7 +13,7 @@ class CalulatorHomeScreen extends StatefulWidget {
 class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
   var userInput = '';
   var outPut = '';
- final FocusNode focusNode = FocusNode();
+  final FocusNode focusNode = FocusNode();
 
   List<String> buttonText = [
     "AC",
@@ -40,14 +38,11 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
     "="
   ];
   bool mulPress = true;
-  bool dotPress = true;
+  bool dotPress = false;
   bool subPress = true;
   bool addPress = true;
   bool dividePress = true;
   bool pPress = true;
-
-
-
 
   bool isDarkModeEnabled = false;
   bool hide = false;
@@ -55,6 +50,7 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
   TextEditingController controller = TextEditingController();
 
   TextEditingController _controller = TextEditingController();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -63,7 +59,6 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
     _controller.text = outPut;
     setState(() {
       // onPress();
-
     });
   }
 
@@ -74,30 +69,32 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
     return Scaffold(
       body: Column(
         // crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.center,
+        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
             height: MediaQuery.of(context).size.height,
             width: double.infinity,
-            decoration: BoxDecoration(
+            decoration:  BoxDecoration(
               // color: isDarkModeEnabled ? Colors.black : Colors.blue
 
-              gradient: LinearGradient(
+              gradient:
+              LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
                 colors: isDarkModeEnabled
                     ? [
                         const Color(0xffe98a7f),
-                        Colors.white,
+                        const Color(0xffe98a7f),
                       ]
                     : [
-                        const Color(0xff344488),
-                        Colors.blue,
+                        const Color(0xff2d3875).withOpacity(0.9),
+                  const Color(0xff2d3875),
+
                       ],
               ),
             ),
             child: Column(
-              // crossAxisAlignment: CrossAxisAlignment.center,
+              // crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Align(
@@ -109,7 +106,6 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
                           onChanged: (value) {
                             setState(() {
                               isDarkModeEnabled = value;
-
                             });
                           }),
                     )),
@@ -135,72 +131,102 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: Text(
-                      userInput,
-                      style: const TextStyle(fontSize: 30, color: Colors.white),
-                      textAlign: TextAlign.right,
-                      overflow: TextOverflow.clip,
-                      maxLines: 1,
+                    padding: const EdgeInsets.only(right: 10,top: 215),
+                    child: Container(
+                      height: 50,
+                      child: Text(
+                        userInput,
+                        style: const TextStyle(fontSize: 30, color: Colors.white),
+                        textAlign: TextAlign.right,
+                        overflow: TextOverflow.clip,
+                        maxLines: 1,
+                      ),
                     ),
                   ),
                 ),
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: Text(
-                      outPut,
-                      style: const TextStyle(fontSize: 52, color: Colors.white),
-                      textAlign: TextAlign.right,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+                    padding: const EdgeInsets.only(right: 10,),
+                    child: Container(
+                      height: 70,
+                      child: Text(
+                        outPut,
+                        style: const TextStyle(fontSize: 52, color: Colors.white),
+                        textAlign: TextAlign.right,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.65,
+
+
+                Expanded(
+
+
                   child: GridView.builder(
+                    // padding:const EdgeInsets.only(top:242),
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: false,
                       itemCount: 20,
                       gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        childAspectRatio: 1.01,
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 100,
+                        mainAxisExtent: 70,
+                        // crossAxisCount: 4,
+                        // childAspectRatio: 1.01,
+
                       ),
                       itemBuilder: (BuildContext context, index) {
                         return GestureDetector(
                           onTap: () {
-
-
-
                             inputProcess(index);
                             // obj.inputProcess(index);
 
                             setState(() {});
                           },
                           child: Container(
+
+
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
-                                // color: Colors.white,
+
                                 border:
-                                    Border.all(color: Colors.grey, width: 1)),
+                                    Border.all(color: Colors.grey, width: 1),
+                              gradient: LinearGradient(
+                                begin: Alignment.topRight,
+                                end: Alignment.bottomLeft,
+                                colors: isDarkModeEnabled
+                                    ? index == 19? [
+                                  const Color(0xff283068),
+                                  Colors.white,
+                                ]: [
+                                   Colors.white,
+                                  Colors.white,
+                                ]
+                                    : index == 19 ? [
+                                  const Color(0xff283068),
+                                  Colors.white,
+                                ] : [
+                                  const Color(0xff283068),
+                                  const Color(0xff283068),
+                                ],
+                              ),
+                            ),
                             // color: Colors.green,
                             child: Center(
                                 child: Text(
                               buttonText[index],
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 40),
+                              style:  TextStyle(
+                                  color:isDarkModeEnabled ?  Colors.black.withOpacity(0.6) : Colors.white, fontSize: 40),
                             )),
                           ),
                         );
                         //
                       }),
                 ),
-                const SizedBox(
-                  height: 3,
-                ),
+
               ],
             ),
           ),
@@ -208,18 +234,21 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
       ),
     );
   }
-void inputOutputClear(){
-  userInput = '';
-  outPut = '';
-}
-void setOpFalse(){
-  subPress = false;
-  dividePress = false;
-  mulPress = false;
-  addPress = false;
-}
+
+  void inputOutputClear() {
+    userInput = '';
+    outPut = '';
+  }
+
+  void setOpFalse() {
+    subPress = false;
+    dividePress = false;
+    mulPress = false;
+    addPress = false;
+  }
 
   String previousOperator = '';
+
   void inputProcess(int index) {
     switch (index) {
       case 0:
@@ -235,25 +264,62 @@ void setOpFalse(){
 
       case 1:
         userInput = userInput.substring(0, userInput.length - 1).toString();
-       setOpFalse();
-
-        break;
-
-      case 2:
-
-        double doubleValue = double.parse(userInput);
-        doubleValue = doubleValue * 0.01;
-
-        outPut = doubleValue.toString();
-        if(userInput.isNotEmpty){
-
-            userInput += '%';
-
+        setOpFalse();
+        if (userInput.endsWith('.')) {
+        } else {
+          dotPress = false;
         }
 
         break;
 
+      case 2:
+        // double doubleValue = double.parse(userInput);
+        // doubleValue = doubleValue * 0.01;
+        //
+        // outPut = doubleValue.toString();
+        // // if (userInput.isNotEmpty) {
+        // //   userInput += '%';
+        // // }
+        // // if(outPut.isNotEmpty){
+        // //          log("Thissss");
+        // //
+        // //
+        // // }
+        // //
+        // // else{
+        // //    log("elseeeee");
+        // // }
+        // doubleValue = double.parse(outPut);
+        // log("double value + $doubleValue");
+        if (outPut.isNotEmpty) {
+          double doubleValue = double.parse(outPut);
+          doubleValue = doubleValue * 0.01;
+          outPut = doubleValue.toString();
+          _controller.text = outPut;
+
+        } else if (userInput.isNotEmpty) {
+          double doubleValue = double.parse(userInput);
+          doubleValue = doubleValue * 0.01;
+          outPut = doubleValue.toString();
+          if(outPut.length > 5 && outPut.contains('.')){
+            outPut = outPut.substring(0,outPut.length - 13);
+
+            log("length is ${outPut.length.toString()}");
+          }
+          else {
+            outPut = doubleValue.toString();
+
+          }
+          _controller.text = outPut;
+
+        }
+
+
+
+        break;
+
       case 3:
+        dotPress = false;
         if (outPut.isNotEmpty) {
           userInput = '$outPut÷';
           outPut = '';
@@ -281,7 +347,7 @@ void setOpFalse(){
 
         userInput += '7';
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
-         inputOutputClear();
+          inputOutputClear();
           userInput += '7';
         }
 
@@ -311,6 +377,9 @@ void setOpFalse(){
         }
         break;
       case 7:
+        // onPress();
+        dotPress = false;
+
         if (outPut.isNotEmpty) {
           userInput = '${outPut}x';
           outPut = '';
@@ -331,8 +400,6 @@ void setOpFalse(){
 
         break;
       case 8:
-
-
         setOpFalse();
         userInput += '4';
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
@@ -360,6 +427,8 @@ void setOpFalse(){
         }
         break;
       case 11:
+        dotPress = false;
+
         if (outPut.isNotEmpty) {
           userInput = '$outPut-';
           outPut = '';
@@ -382,6 +451,7 @@ void setOpFalse(){
       case 12:
         setOpFalse();
         userInput += '1';
+
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
           inputOutputClear();
 
@@ -408,23 +478,21 @@ void setOpFalse(){
 
         break;
       case 15:
+        dotPress = false;
+
         if (outPut.isNotEmpty) {
           userInput = '$outPut+';
           outPut = '';
           subPress = true;
-
         } else {
           if (userInput.isNotEmpty &&
               '+-x÷'.contains(userInput[userInput.length - 1])) {
             // If the previous character is an operator, replace it with '-'
             userInput = '${userInput.substring(0, userInput.length - 1)}+';
-
           } else {
             if (userInput.isNotEmpty) {
               userInput += '+';
             }
-
-
           }
         }
 
@@ -441,40 +509,47 @@ void setOpFalse(){
         break;
       case 17:
         if (!dotPress && userInput.isNotEmpty) {
+          log("this1");
           userInput += '.';
           dotPress = true;
         }
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
+          // dotPress = false;
+
           inputOutputClear();
 
           userInput += '0.';
         }
+        if (userInput.isNotEmpty &&
+            '+-x÷'.contains(userInput[userInput.length - 1])) {
+          dotPress = true;
+
+          // If the previous character is an operator, replace it with '-'
+          // userInput = '${userInput.substring(0, userInput.length - 1)}.';
+          userInput += '.';
+        }
 
         break;
       case 18:
-        if(outPut.isNotEmpty){
-
-          int a  = int.parse(outPut);
-          a = -1 * a;
+        if (outPut.isNotEmpty) {
+          double a = double.parse(outPut);
+          a = -1.0 * a;
 
           outPut = a.toString();
-
-
         }
         // print("object");
         break;
 
       default:
         hide = true;
-        onPress();
+        onEqualPress();
         // _controller.text = outPut;
-
 
         break;
     }
   }
 
-  void onPress() {
+  void onEqualPress() {
     String replace = userInput;
     replace = userInput
         .replaceAll(
@@ -487,8 +562,7 @@ void setOpFalse(){
 
     try {
       RegExp regex = RegExp(r"[+\-*/]$");
-      if (regex.hasMatch(replace))
-      {
+      if (regex.hasMatch(replace)) {
         replace = replace.substring(0, replace.length - 1);
       }
       debugPrint("replace $replace");
@@ -501,7 +575,8 @@ void setOpFalse(){
       double evaluate = exp.evaluate(EvaluationType.REAL, contextModel);
 
       if (evaluate % 1 == 0) {
-        outPut = evaluate.toInt().toString(); // Convert to int and then to string
+        outPut =
+            evaluate.toInt().toString(); // Convert to int and then to string
       } else {
         outPut =
             evaluate.toStringAsFixed(2); // Limiting output to 2 decimal places
@@ -517,8 +592,7 @@ void setOpFalse(){
         subPress = true;
         addPress = true;
       } else {}
-    }
-    catch(e) {
+    } catch (e) {
       debugPrint("exception $e");
     }
 
