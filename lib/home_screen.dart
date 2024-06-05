@@ -3,14 +3,14 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
 
-class CalulatorHomeScreen extends StatefulWidget {
-  const CalulatorHomeScreen({super.key});
+class CalculatorHomeScreen extends StatefulWidget {
+  const CalculatorHomeScreen({super.key});
 
   @override
-  State<CalulatorHomeScreen> createState() => _CalulatorHomeScreenState();
+  State<CalculatorHomeScreen> createState() => _CalculatorHomeScreenState();
 }
 
-class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
+class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
   var userInput = '';
   var outPut = '';
   final FocusNode focusNode = FocusNode();
@@ -43,24 +43,14 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
   bool addPress = true;
   bool dividePress = true;
   bool pPress = true;
+  bool eqPress = true;
+  bool cursor = true;
 
   bool isDarkModeEnabled = false;
   bool hide = false;
   var outPutSize = 34.0;
   TextEditingController controller = TextEditingController();
-
-  TextEditingController _controller = TextEditingController();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    _controller.text = outPut;
-    setState(() {
-      // onPress();
-    });
-  }
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -74,159 +64,166 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
           Container(
             height: MediaQuery.of(context).size.height,
             width: double.infinity,
-            decoration:  BoxDecoration(
-              // color: isDarkModeEnabled ? Colors.black : Colors.blue
-
-              gradient:
-              LinearGradient(
+            decoration: BoxDecoration(
+              // color: isDarkModeEnabled ? Colors.red : Colors.blue,
+              gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: isDarkModeEnabled
+                colors: !isDarkModeEnabled
                     ? [
                         const Color(0xffe98a7f),
                         const Color(0xffe98a7f),
                       ]
                     : [
-                        const Color(0xff2d3875).withOpacity(0.9),
-                  const Color(0xff2d3875),
-
+                        Colors.blueAccent,
+                        const Color(0xff2d3875),
                       ],
               ),
             ),
             child: Column(
               // crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 25),
-                      child: Switch(
-                          value: isDarkModeEnabled,
-                          onChanged: (value) {
-                            setState(() {
-                              isDarkModeEnabled = value;
-                            });
-                          }),
-                    )),
-                // TextFormField(
-                //   cursorColor: Colors.white,
-                //   showCursor: true
-                //   ,
-                //   onTap: (){
-                //
-                //     FocusScope.of(context).requestFocus(focusNode);
-                //   },
-                //   controller: _controller,
-                //
-                //   onChanged: (value) {
-                //
-                //     setState(() {
-                //
-                //       onPress();
-                //     });
-                //   },
-                //   // initialValue: userInput.toString(),
-                // ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 10,top: 215),
-                    child: Container(
-                      height: 50,
-                      child: Text(
-                        userInput,
-                        style: const TextStyle(fontSize: 30, color: Colors.white),
-                        textAlign: TextAlign.right,
-                        overflow: TextOverflow.clip,
-                        maxLines: 1,
-                      ),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 10,),
-                    child: Container(
-                      height: 70,
-                      child: Text(
-                        outPut,
-                        style: const TextStyle(fontSize: 52, color: Colors.white),
-                        textAlign: TextAlign.right,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                      ),
-                    ),
-                  ),
-                ),
-
-
                 Expanded(
-
-
+                  child: Stack(
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          TextFormField(
+                            readOnly: true,
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 30),
+                            cursorColor: Colors.white,
+                            showCursor: cursor,
+                            onTap: () {
+                              // FocusScope.of(context).requestFocus(focusNode);
+                            },
+                            controller: _controller,
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                            ),
+                            autofocus: true,
+                          ),
+                          // Align(
+                          //   alignment: Alignment.bottomRight,
+                          //   child: Padding(
+                          //     padding:
+                          //     const EdgeInsets.only(right: 10, top: 150),
+                          //     child: SizedBox(
+                          //       height: 50,
+                          //       child: Text(
+                          //         userInput,
+                          //         style: const TextStyle(
+                          //             fontSize: 30, color: Colors.white),
+                          //         textAlign: TextAlign.right,
+                          //         overflow: TextOverflow.clip,
+                          //         maxLines: 1,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              right: 10,
+                            ),
+                            child: SizedBox(
+                              height: 70,
+                              child: Text(
+                                outPut,
+                                style: const TextStyle(
+                                    fontSize: 52, color: Colors.white),
+                                textAlign: TextAlign.right,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Positioned(
+                          left: 0,
+                          top: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 25),
+                            child: Switch(
+                                value: isDarkModeEnabled,
+                                onChanged: (value) {
+                                  setState(() {
+                                    isDarkModeEnabled = value;
+                                  });
+                                }),
+                          )),
+                    ],
+                  ),
+                ),
+                Expanded(
                   child: GridView.builder(
-                    // padding:const EdgeInsets.only(top:242),
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: false,
                       itemCount: 20,
                       gridDelegate:
                           const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 100,
-                        mainAxisExtent: 70,
-                        // crossAxisCount: 4,
-                        // childAspectRatio: 1.01,
-
+                        maxCrossAxisExtent: 100,
+                        mainAxisExtent: 72,
+                        crossAxisSpacing: 2,
+                        mainAxisSpacing: 2,
                       ),
                       itemBuilder: (BuildContext context, index) {
-                        return GestureDetector(
+                        return InkWell(
                           onTap: () {
                             inputProcess(index);
-                            // obj.inputProcess(index);
 
                             setState(() {});
                           },
                           child: Container(
-
-
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
-
-                                border:
-                                    Border.all(color: Colors.grey, width: 1),
+                              // border:
+                              // Border.all(color: Colors.green, width: 1),
                               gradient: LinearGradient(
                                 begin: Alignment.topRight,
                                 end: Alignment.bottomLeft,
-                                colors: isDarkModeEnabled
-                                    ? index == 19? [
-                                  const Color(0xff283068),
-                                  Colors.white,
-                                ]: [
-                                   Colors.white,
-                                  Colors.white,
-                                ]
-                                    : index == 19 ? [
-                                  const Color(0xff283068),
-                                  Colors.white,
-                                ] : [
-                                  const Color(0xff283068),
-                                  const Color(0xff283068),
-                                ],
+                                colors: !isDarkModeEnabled
+                                    ? index == 19
+                                        ? [
+                                            Colors.transparent,
+                                            Colors.transparent,
+                                          ]
+                                        : [
+                                            Colors.white,
+                                            Colors.white,
+                                          ]
+                                    : index == 19
+                                        ? [
+                                            Colors.transparent,
+                                            Colors.transparent,
+                                          ]
+                                        : [
+                                            const Color(0xff283060),
+                                            const Color(0xff283068),
+                                          ],
                               ),
                             ),
                             // color: Colors.green,
                             child: Center(
                                 child: Text(
                               buttonText[index],
-                              style:  TextStyle(
-                                  color:isDarkModeEnabled ?  Colors.black.withOpacity(0.6) : Colors.white, fontSize: 40),
+                              style: TextStyle(
+                                  color: !isDarkModeEnabled
+                                      ? index == 19
+                                          ? Colors.white
+                                          : Colors.black.withOpacity(0.6)
+                                      : Colors.white,
+                                  fontSize: 40),
                             )),
                           ),
                         );
                         //
                       }),
                 ),
-
               ],
             ),
           ),
@@ -250,8 +247,12 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
   String previousOperator = '';
 
   void inputProcess(int index) {
+    int cursorPos = _controller.selection.baseOffset;
+    if (cursorPos == -1) cursorPos = userInput.length;
+    cursor = true;
+
     switch (index) {
-      case 0:
+      case 0: // AC
         inputOutputClear();
 
         addPress = true;
@@ -262,288 +263,511 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
         _controller.text = '';
         break;
 
-      case 1:
-        userInput = userInput.substring(0, userInput.length - 1).toString();
-        setOpFalse();
-        if (userInput.endsWith('.')) {
-        } else {
-          dotPress = false;
+      case 1: // C
+        dotPress = false;
+        if (cursorPos > 0) {
+          userInput = userInput.substring(0, cursorPos - 1) +
+              userInput.substring(cursorPos);
+          cursorPos--;
         }
+
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
+
+        setOpFalse();
 
         break;
 
-      case 2:
-        // double doubleValue = double.parse(userInput);
-        // doubleValue = doubleValue * 0.01;
-        //
-        // outPut = doubleValue.toString();
-        // // if (userInput.isNotEmpty) {
-        // //   userInput += '%';
-        // // }
-        // // if(outPut.isNotEmpty){
-        // //          log("Thissss");
-        // //
-        // //
-        // // }
-        // //
-        // // else{
-        // //    log("elseeeee");
-        // // }
-        // doubleValue = double.parse(outPut);
-        // log("double value + $doubleValue");
+      case 2: // %
         if (outPut.isNotEmpty) {
           double doubleValue = double.parse(outPut);
           doubleValue = doubleValue * 0.01;
           outPut = doubleValue.toString();
           _controller.text = outPut;
-
         } else if (userInput.isNotEmpty) {
           double doubleValue = double.parse(userInput);
           doubleValue = doubleValue * 0.01;
           outPut = doubleValue.toString();
-          if(outPut.length > 5 && outPut.contains('.')){
-            outPut = outPut.substring(0,outPut.length - 13);
+          if (outPut.length > 5 && outPut.contains('.')) {
+            outPut = outPut.substring(0, outPut.length - 13);
 
             log("length is ${outPut.length.toString()}");
-          }
-          else {
+          } else {
             outPut = doubleValue.toString();
-
           }
           _controller.text = outPut;
-
         }
-
-
 
         break;
 
-      case 3:
+      case 3: // ÷÷÷÷
         dotPress = false;
         if (outPut.isNotEmpty) {
-          userInput = '$outPut÷';
-          outPut = '';
-          dividePress = true;
-          // previousOperator = '÷';
-        } else {
-          if (userInput.isNotEmpty &&
-              '+-x÷'.contains(userInput[userInput.length - 1])) {
-            // If the previous character is an operator, replace it with '-'
-            userInput = '${userInput.substring(0, userInput.length - 1)}÷';
-            // previousOperator = '÷';
+          if (userInput.endsWith('÷')) {
           } else {
-            if (userInput.isNotEmpty) {
-              userInput += '÷';
+            userInput =
+                '${userInput.substring(0, cursorPos)}÷${userInput.substring(cursorPos)}';
+            cursorPos++;
+          }
+
+          addPress = true;
+        } else {
+          if (userInput.isNotEmpty) {
+            // Check if the cursor is at the beginning or if an operator already exists at the cursor position
+            if (cursorPos > 0 && !'+-x÷'.contains(userInput[cursorPos - 1])) {
+              // Insert the divide operator at the cursor position
+              userInput =
+                  '${userInput.substring(0, cursorPos)}÷${userInput.substring(cursorPos)}';
+              cursorPos++;
+            } else if (cursorPos == 0) {
+              // If the cursor is at the beginning, insert the operator
+              userInput = '÷$userInput';
+              cursorPos++;
+            } else if (cursorPos > 0 &&
+                '+-x÷'.contains(userInput[cursorPos - 1])) {
+              // Replace the existing operator if there's already one at the cursor position
+              userInput =
+                  '${userInput.substring(0, cursorPos - 1)}÷${userInput.substring(cursorPos)}';
             }
-            // previousOperator = '÷';
           }
         }
 
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
         break;
 
-      case 4:
+      case 4: // 7
 
         setOpFalse();
-
-        userInput += '7';
-        if (outPut.isNotEmpty && userInput.isNotEmpty) {
+        userInput =
+            '${userInput.substring(0, cursorPos)}7${userInput.substring(cursorPos)}';
+        cursorPos++;
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
+        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
           inputOutputClear();
+          _controller.text = '';
+          _controller.text = '7';
           userInput += '7';
+          eqPress = true;
+        } else {}
+        if (userInput.contains('+') ||
+            userInput.contains('-') ||
+            userInput.contains('x') ||
+            userInput.contains('÷')) {
+          onEqualPress();
         }
 
         break;
 
-      case 5:
+      case 5: // 8
+
         setOpFalse();
-        userInput += '8';
+        userInput =
+            '${userInput.substring(0, cursorPos)}8${userInput.substring(cursorPos)}';
+        cursorPos++;
         _controller.text = userInput;
-
-        if (outPut.isNotEmpty && userInput.isNotEmpty) {
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
+        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
           inputOutputClear();
-
+          _controller.text = '';
+          _controller.text = '8';
           userInput += '8';
+          eqPress = true;
+        } else {}
+        if (userInput.contains('+') ||
+            userInput.contains('-') ||
+            userInput.contains('x') ||
+            userInput.contains('÷')) {
+          onEqualPress();
         }
-
         break;
-      case 6:
+      case 6: // 9
+
         setOpFalse();
-        userInput += '9';
+        userInput =
+            '${userInput.substring(0, cursorPos)}9${userInput.substring(cursorPos)}';
+        cursorPos++;
         _controller.text = userInput;
-
-        if (outPut.isNotEmpty && userInput.isNotEmpty) {
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
+        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
           inputOutputClear();
-
+          _controller.text = '';
+          _controller.text = '9';
           userInput += '9';
+          eqPress = true;
+        } else {}
+        if (userInput.contains('+') ||
+            userInput.contains('-') ||
+            userInput.contains('x') ||
+            userInput.contains('÷')) {
+          onEqualPress();
         }
         break;
-      case 7:
-        // onPress();
+      case 7: // X
         dotPress = false;
-
         if (outPut.isNotEmpty) {
-          userInput = '${outPut}x';
-          outPut = '';
-          mulPress = true;
-          // previousOperator = 'x';
-        } else {
-          if (userInput.isNotEmpty &&
-              '+-x÷'.contains(userInput[userInput.length - 1])) {
-            userInput = '${userInput.substring(0, userInput.length - 1)}x';
-            // previousOperator = 'x';
+          if (userInput.endsWith('x')) {
           } else {
-            if (userInput.isNotEmpty) {
-              userInput += 'x';
+            userInput =
+                '${userInput.substring(0, cursorPos)}x${userInput.substring(cursorPos)}';
+            cursorPos++;
+          }
+
+          addPress = true;
+        } else {
+          if (userInput.isNotEmpty) {
+            // Check if the cursor is at the beginning or if an operator already exists at the cursor position
+            if (cursorPos > 0 && !'+-x÷'.contains(userInput[cursorPos - 1])) {
+              // Insert the divide operator at the cursor position
+              userInput =
+                  '${userInput.substring(0, cursorPos)}x${userInput.substring(cursorPos)}';
+              cursorPos++;
+            } else if (cursorPos == 0) {
+              // If the cursor is at the beginning, insert the operator
+              userInput = 'x$userInput';
+              cursorPos++;
+            } else if (cursorPos > 0 &&
+                '+-x÷'.contains(userInput[cursorPos - 1])) {
+              // Replace the existing operator if there's already one at the cursor position
+              userInput =
+                  '${userInput.substring(0, cursorPos - 1)}x${userInput.substring(cursorPos)}';
             }
-            // previousOperator = 'x';
           }
         }
 
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
         break;
-      case 8:
-        setOpFalse();
-        userInput += '4';
-        if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          inputOutputClear();
 
+      case 8: // 4
+
+        setOpFalse();
+        userInput =
+            '${userInput.substring(0, cursorPos)}4${userInput.substring(cursorPos)}';
+        cursorPos++;
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
+        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
+          inputOutputClear();
+          _controller.text = '';
+          _controller.text = '4';
           userInput += '4';
+          eqPress = true;
+        } else {}
+        if (userInput.contains('+') ||
+            userInput.contains('-') ||
+            userInput.contains('x') ||
+            userInput.contains('÷')) {
+          onEqualPress();
         }
         break;
-      case 9:
-        setOpFalse();
-        userInput += '5';
-        if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          inputOutputClear();
+      case 9: //5
+        // setOpFalse();
+        // userInput =
+        // '${userInput.substring(0, cursorPos)}5${userInput.substring(cursorPos)}';
+        // cursorPos++;
+        // _controller.text = userInput;
+        // _controller.selection =
+        //     TextSelection.fromPosition(TextPosition(offset: cursorPos));
+        // if (outPut.isNotEmpty && userInput.isNotEmpty) {
+        //   inputOutputClear();
+        //   _controller.text = '';
+        //   _controller.text = '5';
+        //   userInput += '5';
+        // }
+        // if(userInput.contains('+') || userInput.contains('-') ||userInput.contains('x') || userInput.contains('÷') ){
+        //
+        //   onEqualPress();
+        // }
 
+        setOpFalse();
+        userInput =
+            '${userInput.substring(0, cursorPos)}5${userInput.substring(cursorPos)}';
+        cursorPos++;
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
+        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
+          inputOutputClear();
+          _controller.text = '';
+          _controller.text = '5';
           userInput += '5';
+          eqPress = true;
+        } else {}
+        if (userInput.contains('+') ||
+            userInput.contains('-') ||
+            userInput.contains('x') ||
+            userInput.contains('÷')) {
+          onEqualPress();
         }
         break;
-      case 10:
-        setOpFalse();
-        userInput += '6';
-        if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          inputOutputClear();
+      case 10: //6
+        // setOpFalse();
+        // userInput =
+        // '${userInput.substring(0, cursorPos)}6${userInput.substring(cursorPos)}';
+        // cursorPos++;
+        // _controller.text = userInput;
+        // _controller.selection =
+        //     TextSelection.fromPosition(TextPosition(offset: cursorPos));
+        // if (outPut.isNotEmpty && userInput.isNotEmpty) {
+        //   inputOutputClear();
+        //   _controller.text = '';
+        //   _controller.text = '6';
+        //   userInput += '6';
+        // }
+        // if(userInput.contains('+') || userInput.contains('-') ||userInput.contains('x') || userInput.contains('÷') ){
+        //
+        //   onEqualPress();
+        // }
 
+        setOpFalse();
+        userInput =
+            '${userInput.substring(0, cursorPos)}6${userInput.substring(cursorPos)}';
+        cursorPos++;
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
+        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
+          inputOutputClear();
+          _controller.text = '';
+          _controller.text = '6';
           userInput += '6';
+          eqPress = true;
+        } else {}
+        if (userInput.contains('+') ||
+            userInput.contains('-') ||
+            userInput.contains('x') ||
+            userInput.contains('÷')) {
+          onEqualPress();
         }
         break;
-      case 11:
+      case 11: //-
         dotPress = false;
-
         if (outPut.isNotEmpty) {
-          userInput = '$outPut-';
-          outPut = '';
-          subPress = true;
-          // previousOperator = '-';
-        } else {
-          if (userInput.isNotEmpty &&
-              '+-x÷'.contains(userInput[userInput.length - 1])) {
-            // If the previous character is an operator, replace it with '-'
-            userInput = '${userInput.substring(0, userInput.length - 1)}-';
-            // previousOperator = '-';
+          // userInput = '$outPut-';
+          // outPut = '';
+          if (userInput.endsWith('-')) {
           } else {
-            if (userInput.isNotEmpty) {
-              userInput += '-';
+            userInput =
+                '${userInput.substring(0, cursorPos)}-${userInput.substring(cursorPos)}';
+            cursorPos++;
+          }
+
+          addPress = true;
+        } else {
+          if (userInput.isNotEmpty) {
+            // Check if the cursor is at the beginning or if an operator already exists at the cursor position
+            if (cursorPos > 0 && !'+-x÷'.contains(userInput[cursorPos - 1])) {
+              // Insert the divide operator at the cursor position
+              userInput =
+                  '${userInput.substring(0, cursorPos)}-${userInput.substring(cursorPos)}';
+              cursorPos++;
+            } else if (cursorPos == 0) {
+              // If the cursor is at the beginning, insert the operator
+              userInput = '-$userInput';
+              cursorPos++;
+            } else if (cursorPos > 0 &&
+                '+-x÷'.contains(userInput[cursorPos - 1])) {
+              // Replace the existing operator if there's already one at the cursor position
+              userInput =
+                  '${userInput.substring(0, cursorPos - 1)}-${userInput.substring(cursorPos)}';
             }
-            // previousOperator = '-';
           }
         }
+
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
         break;
-      case 12:
+
+      case 12: // 1
         setOpFalse();
-        userInput += '1';
-
-        if (outPut.isNotEmpty && userInput.isNotEmpty) {
+        userInput =
+            '${userInput.substring(0, cursorPos)}1${userInput.substring(cursorPos)}';
+        cursorPos++;
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
+        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
           inputOutputClear();
-
+          _controller.text = '';
+          _controller.text = '1';
           userInput += '1';
+          eqPress = true;
+        } else {}
+        if (userInput.contains('+') ||
+            userInput.contains('-') ||
+            userInput.contains('x') ||
+            userInput.contains('÷')) {
+          onEqualPress();
         }
         break;
-      case 13:
-        setOpFalse();
-        userInput += '2';
-        if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          inputOutputClear();
 
+      case 13: //2
+
+        setOpFalse();
+        userInput =
+            '${userInput.substring(0, cursorPos)}2${userInput.substring(cursorPos)}';
+        cursorPos++;
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
+        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
+          inputOutputClear();
+          _controller.text = '';
+          _controller.text = '2';
           userInput += '2';
+          eqPress = true;
+        } else {}
+        if (userInput.contains('+') ||
+            userInput.contains('-') ||
+            userInput.contains('x') ||
+            userInput.contains('÷')) {
+          onEqualPress();
         }
+
         break;
-      case 14:
+      case 14: //3
+
         setOpFalse();
-        userInput += '3';
-        if (outPut.isNotEmpty && userInput.isNotEmpty) {
+        userInput =
+            '${userInput.substring(0, cursorPos)}3${userInput.substring(cursorPos)}';
+        cursorPos++;
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
+        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
           inputOutputClear();
-
+          _controller.text = '';
+          _controller.text = '3';
           userInput += '3';
+          eqPress = true;
+        } else {}
+        if (userInput.contains('+') ||
+            userInput.contains('-') ||
+            userInput.contains('x') ||
+            userInput.contains('÷')) {
+          onEqualPress();
         }
-
         break;
-      case 15:
+      case 15: //+
         dotPress = false;
-
         if (outPut.isNotEmpty) {
-          userInput = '$outPut+';
-          outPut = '';
-          subPress = true;
-        } else {
-          if (userInput.isNotEmpty &&
-              '+-x÷'.contains(userInput[userInput.length - 1])) {
-            // If the previous character is an operator, replace it with '-'
-            userInput = '${userInput.substring(0, userInput.length - 1)}+';
+          // userInput = '$outPut+';
+          // userInput = '$userInput+';
+     // cursorPos++ ;
+     //      outPut = '';
+
+          if (userInput.endsWith('+')) {
           } else {
-            if (userInput.isNotEmpty) {
-              userInput += '+';
+            userInput =
+                '${userInput.substring(0, cursorPos)}+${userInput.substring(cursorPos)}';
+            cursorPos++;
+          }
+
+          addPress = true;
+        } else {
+          if (userInput.isNotEmpty) {
+            // Check if the cursor is at the beginning or if an operator already exists at the cursor position
+            if (cursorPos > 0 && !'+-x÷'.contains(userInput[cursorPos - 1])) {
+              // Insert the divide operator at the cursor position
+              userInput =
+                  '${userInput.substring(0, cursorPos)}+${userInput.substring(cursorPos)}';
+              cursorPos++;
+            } else if (cursorPos == 0) {
+              // If the cursor is at the beginning, insert the operator
+              userInput = '+$userInput';
+              cursorPos++;
+            } else if (cursorPos > 0 &&
+                '+-x÷'.contains(userInput[cursorPos - 1])) {
+              // Replace the existing operator if there's already one at the cursor position
+              userInput =
+                  '${userInput.substring(0, cursorPos - 1)}+${userInput.substring(cursorPos)}';
             }
           }
         }
 
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
         break;
-      case 16:
-        mulPress = false;
-        userInput += '0';
+
+      case 16: // 0
+        setOpFalse();
+        userInput =
+            '${userInput.substring(0, cursorPos)}0${userInput.substring(cursorPos)}';
+        cursorPos++;
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
           inputOutputClear();
-
+          _controller.text = '';
+          _controller.text = '0';
           userInput += '0';
         }
 
         break;
-      case 17:
-        if (!dotPress && userInput.isNotEmpty) {
-          log("this1");
-          userInput += '.';
+
+      case 17: // .
+        // Check if dotPress is false and cursor is not at the start
+        if (!dotPress && cursorPos > 0) {
+          // Get the part of the userInput before the cursor
+          String beforeCursor = userInput.substring(0, cursorPos);
+          // Get the part of the userInput after the cursor
+          String afterCursor = userInput.substring(cursorPos);
+
+          // Check if there's already a dot in the current number segment
+          bool dotExists =
+              beforeCursor.split(RegExp(r'[\+\-\x÷]')).last.contains('.');
+
+          // Only insert dot if there's no existing dot in the current number
+          if (!dotExists) {
+            userInput = beforeCursor + '.' + afterCursor;
+            cursorPos++;
+            dotPress = true;
+          }
+        } else if (!dotPress && cursorPos == 0) {
+          // If the cursor is at the start, allow inserting a leading zero with dot
+          userInput = '0.' + userInput;
+          cursorPos += 2; // Move cursor after the inserted '0.'
           dotPress = true;
         }
-        if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          // dotPress = false;
 
-          inputOutputClear();
-
-          userInput += '0.';
-        }
-        if (userInput.isNotEmpty &&
-            '+-x÷'.contains(userInput[userInput.length - 1])) {
-          dotPress = true;
-
-          // If the previous character is an operator, replace it with '-'
-          // userInput = '${userInput.substring(0, userInput.length - 1)}.';
-          userInput += '.';
-        }
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
 
         break;
-      case 18:
+
+      case 18: // +-
         if (outPut.isNotEmpty) {
           double a = double.parse(outPut);
           a = -1.0 * a;
 
           outPut = a.toString();
         }
-        // print("object");
+
+        _controller.text = userInput;
+
         break;
 
-      default:
+      default: // =
+        eqPress = false;
         hide = true;
         onEqualPress();
-        // _controller.text = outPut;
+        _controller.text = outPut;
+        userInput = '' ;
+        _controller.text = '';
+        // cursor = false;
 
         break;
     }
@@ -558,18 +782,14 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
         )
         .replaceAll('÷', '/');
 
-    debugPrint("userInput $userInput");
-
     try {
       RegExp regex = RegExp(r"[+\-*/]$");
       if (regex.hasMatch(replace)) {
         replace = replace.substring(0, replace.length - 1);
       }
-      debugPrint("replace $replace");
 
       Parser p = Parser();
       Expression exp = p.parse(replace);
-      debugPrint("exp $exp");
 
       ContextModel contextModel = ContextModel();
       double evaluate = exp.evaluate(EvaluationType.REAL, contextModel);
@@ -595,7 +815,5 @@ class _CalulatorHomeScreenState extends State<CalulatorHomeScreen> {
     } catch (e) {
       debugPrint("exception $e");
     }
-
-    setState(() {});
   }
 }
