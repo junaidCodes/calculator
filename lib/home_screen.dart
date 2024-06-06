@@ -43,9 +43,8 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
   bool addPress = true;
   bool dividePress = true;
   bool pPress = true;
-  bool eqPress = true;
   bool cursor = true;
-
+bool zeroPress = false;
   bool isDarkModeEnabled = false;
   bool hide = false;
   var outPutSize = 34.0;
@@ -232,6 +231,69 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
     );
   }
 
+  void operandCode(String operand) {
+    int cursorPos = _controller.selection.baseOffset;
+    if (cursorPos == -1) cursorPos = userInput.length;
+
+    setOpFalse();
+    userInput =
+        '${userInput.substring(0, cursorPos)}$operand${userInput.substring(cursorPos)}';
+    cursorPos++;
+    _controller.text = userInput;
+    _controller.selection =
+        TextSelection.fromPosition(TextPosition(offset: cursorPos));
+    if (outPut.isNotEmpty && userInput.isNotEmpty) {
+      inputOutputClear();
+      _controller.text = '';
+      _controller.text = operand;
+      userInput += operand;
+    }
+  }
+
+  void opCode(String op) {
+    int cursorPos = _controller.selection.baseOffset;
+    if (cursorPos == -1) cursorPos = userInput.length;
+
+    dotPress = false;
+    if (outPut.isNotEmpty) {
+
+      userInput = '$outPut$op';
+      outPut = '';
+      addPress = true;
+      cursorPos = cursorPos +2;
+    } else {
+
+
+      if (userInput.isNotEmpty) {
+
+        // Check if the cursor is at the beginning or if an operator already exists at the cursor position
+        if (cursorPos > 0 && !'+-x÷'.contains(userInput[cursorPos - 1])) {
+
+          // Insert the divide operator at the cursor position
+          userInput =
+              '${userInput.substring(0, cursorPos)}$op${userInput.substring(cursorPos)}';
+          cursorPos++;
+        } else if (cursorPos == 0) {
+
+          // If the cursor is at the beginning, insert the operator
+          userInput = '$op$userInput';
+          cursorPos++;
+        } else if (cursorPos > 0 && '+-x÷'.contains(userInput[cursorPos - 1])) {
+
+          // Replace the existing operator if there's already one at the cursor position
+          userInput =
+              '${userInput.substring(0, cursorPos - 1)}$op${userInput.substring(cursorPos)}';
+        }
+      } else {
+
+      }
+    }
+
+    _controller.text = userInput;
+    _controller.selection =
+        TextSelection.fromPosition(TextPosition(offset: cursorPos));
+  }
+
   void inputOutputClear() {
     userInput = '';
     outPut = '';
@@ -247,9 +309,9 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
   String previousOperator = '';
 
   void inputProcess(int index) {
+    cursor = true;
     int cursorPos = _controller.selection.baseOffset;
     if (cursorPos == -1) cursorPos = userInput.length;
-    cursor = true;
 
     switch (index) {
       case 0: // AC
@@ -266,16 +328,23 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
       case 1: // C
         dotPress = false;
         if (cursorPos > 0) {
+          // Remove the character before the cursor position
           userInput = userInput.substring(0, cursorPos - 1) +
               userInput.substring(cursorPos);
           cursorPos--;
+          // dotPress = true;
         }
 
+        // Update the controller text and selection
         _controller.text = userInput;
         _controller.selection =
             TextSelection.fromPosition(TextPosition(offset: cursorPos));
 
+        // Reset operator flags
         setOpFalse();
+        // if (userInput.endsWith('.')) {
+        //   dotPress = false;
+        // }
 
         break;
 
@@ -301,421 +370,95 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
 
         break;
 
-      case 3: // ÷÷÷÷
-        dotPress = false;
-        if (outPut.isNotEmpty) {
-          if (userInput.endsWith('÷')) {
-          } else {
-            userInput =
-                '${userInput.substring(0, cursorPos)}÷${userInput.substring(cursorPos)}';
-            cursorPos++;
-          }
+      case 3: // ÷÷÷
+        opCode('÷');
 
-          addPress = true;
-        } else {
-          if (userInput.isNotEmpty) {
-            // Check if the cursor is at the beginning or if an operator already exists at the cursor position
-            if (cursorPos > 0 && !'+-x÷'.contains(userInput[cursorPos - 1])) {
-              // Insert the divide operator at the cursor position
-              userInput =
-                  '${userInput.substring(0, cursorPos)}÷${userInput.substring(cursorPos)}';
-              cursorPos++;
-            } else if (cursorPos == 0) {
-              // If the cursor is at the beginning, insert the operator
-              userInput = '÷$userInput';
-              cursorPos++;
-            } else if (cursorPos > 0 &&
-                '+-x÷'.contains(userInput[cursorPos - 1])) {
-              // Replace the existing operator if there's already one at the cursor position
-              userInput =
-                  '${userInput.substring(0, cursorPos - 1)}÷${userInput.substring(cursorPos)}';
-            }
-          }
-        }
-
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
         break;
 
       case 4: // 7
-
-        setOpFalse();
-        userInput =
-            '${userInput.substring(0, cursorPos)}7${userInput.substring(cursorPos)}';
-        cursorPos++;
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
-          inputOutputClear();
-          _controller.text = '';
-          _controller.text = '7';
-          userInput += '7';
-          eqPress = true;
-        } else {}
-        if (userInput.contains('+') ||
-            userInput.contains('-') ||
-            userInput.contains('x') ||
-            userInput.contains('÷')) {
-          onEqualPress();
-        }
-
+        operandCode('7');
         break;
 
       case 5: // 8
-
-        setOpFalse();
-        userInput =
-            '${userInput.substring(0, cursorPos)}8${userInput.substring(cursorPos)}';
-        cursorPos++;
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
-          inputOutputClear();
-          _controller.text = '';
-          _controller.text = '8';
-          userInput += '8';
-          eqPress = true;
-        } else {}
-        if (userInput.contains('+') ||
-            userInput.contains('-') ||
-            userInput.contains('x') ||
-            userInput.contains('÷')) {
-          onEqualPress();
-        }
+        operandCode('8');
         break;
       case 6: // 9
+        operandCode('9');
 
-        setOpFalse();
-        userInput =
-            '${userInput.substring(0, cursorPos)}9${userInput.substring(cursorPos)}';
-        cursorPos++;
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
-          inputOutputClear();
-          _controller.text = '';
-          _controller.text = '9';
-          userInput += '9';
-          eqPress = true;
-        } else {}
-        if (userInput.contains('+') ||
-            userInput.contains('-') ||
-            userInput.contains('x') ||
-            userInput.contains('÷')) {
-          onEqualPress();
-        }
         break;
-      case 7: // X
-        dotPress = false;
-        if (outPut.isNotEmpty) {
-          if (userInput.endsWith('x')) {
-          } else {
-            userInput =
-                '${userInput.substring(0, cursorPos)}x${userInput.substring(cursorPos)}';
-            cursorPos++;
-          }
+      case 7: // x
+        opCode('x');
 
-          addPress = true;
-        } else {
-          if (userInput.isNotEmpty) {
-            // Check if the cursor is at the beginning or if an operator already exists at the cursor position
-            if (cursorPos > 0 && !'+-x÷'.contains(userInput[cursorPos - 1])) {
-              // Insert the divide operator at the cursor position
-              userInput =
-                  '${userInput.substring(0, cursorPos)}x${userInput.substring(cursorPos)}';
-              cursorPos++;
-            } else if (cursorPos == 0) {
-              // If the cursor is at the beginning, insert the operator
-              userInput = 'x$userInput';
-              cursorPos++;
-            } else if (cursorPos > 0 &&
-                '+-x÷'.contains(userInput[cursorPos - 1])) {
-              // Replace the existing operator if there's already one at the cursor position
-              userInput =
-                  '${userInput.substring(0, cursorPos - 1)}x${userInput.substring(cursorPos)}';
-            }
-          }
-        }
-
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
         break;
 
       case 8: // 4
+        operandCode('4');
 
-        setOpFalse();
-        userInput =
-            '${userInput.substring(0, cursorPos)}4${userInput.substring(cursorPos)}';
-        cursorPos++;
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
-          inputOutputClear();
-          _controller.text = '';
-          _controller.text = '4';
-          userInput += '4';
-          eqPress = true;
-        } else {}
-        if (userInput.contains('+') ||
-            userInput.contains('-') ||
-            userInput.contains('x') ||
-            userInput.contains('÷')) {
-          onEqualPress();
-        }
         break;
-      case 9: //5
-        // setOpFalse();
-        // userInput =
-        // '${userInput.substring(0, cursorPos)}5${userInput.substring(cursorPos)}';
-        // cursorPos++;
-        // _controller.text = userInput;
-        // _controller.selection =
-        //     TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        // if (outPut.isNotEmpty && userInput.isNotEmpty) {
-        //   inputOutputClear();
-        //   _controller.text = '';
-        //   _controller.text = '5';
-        //   userInput += '5';
-        // }
-        // if(userInput.contains('+') || userInput.contains('-') ||userInput.contains('x') || userInput.contains('÷') ){
-        //
-        //   onEqualPress();
-        // }
 
-        setOpFalse();
-        userInput =
-            '${userInput.substring(0, cursorPos)}5${userInput.substring(cursorPos)}';
-        cursorPos++;
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
-          inputOutputClear();
-          _controller.text = '';
-          _controller.text = '5';
-          userInput += '5';
-          eqPress = true;
-        } else {}
-        if (userInput.contains('+') ||
-            userInput.contains('-') ||
-            userInput.contains('x') ||
-            userInput.contains('÷')) {
-          onEqualPress();
-        }
+      case 9: // 5
+        operandCode('5');
+
         break;
-      case 10: //6
-        // setOpFalse();
-        // userInput =
-        // '${userInput.substring(0, cursorPos)}6${userInput.substring(cursorPos)}';
-        // cursorPos++;
-        // _controller.text = userInput;
-        // _controller.selection =
-        //     TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        // if (outPut.isNotEmpty && userInput.isNotEmpty) {
-        //   inputOutputClear();
-        //   _controller.text = '';
-        //   _controller.text = '6';
-        //   userInput += '6';
-        // }
-        // if(userInput.contains('+') || userInput.contains('-') ||userInput.contains('x') || userInput.contains('÷') ){
-        //
-        //   onEqualPress();
-        // }
+      case 10: //  6
+        operandCode('6');
 
-        setOpFalse();
-        userInput =
-            '${userInput.substring(0, cursorPos)}6${userInput.substring(cursorPos)}';
-        cursorPos++;
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
-          inputOutputClear();
-          _controller.text = '';
-          _controller.text = '6';
-          userInput += '6';
-          eqPress = true;
-        } else {}
-        if (userInput.contains('+') ||
-            userInput.contains('-') ||
-            userInput.contains('x') ||
-            userInput.contains('÷')) {
-          onEqualPress();
-        }
         break;
-      case 11: //-
-        dotPress = false;
-        if (outPut.isNotEmpty) {
-          // userInput = '$outPut-';
-          // outPut = '';
-          if (userInput.endsWith('-')) {
-          } else {
-            userInput =
-                '${userInput.substring(0, cursorPos)}-${userInput.substring(cursorPos)}';
-            cursorPos++;
-          }
+      case 11: // -
+        opCode('-');
 
-          addPress = true;
-        } else {
-          if (userInput.isNotEmpty) {
-            // Check if the cursor is at the beginning or if an operator already exists at the cursor position
-            if (cursorPos > 0 && !'+-x÷'.contains(userInput[cursorPos - 1])) {
-              // Insert the divide operator at the cursor position
-              userInput =
-                  '${userInput.substring(0, cursorPos)}-${userInput.substring(cursorPos)}';
-              cursorPos++;
-            } else if (cursorPos == 0) {
-              // If the cursor is at the beginning, insert the operator
-              userInput = '-$userInput';
-              cursorPos++;
-            } else if (cursorPos > 0 &&
-                '+-x÷'.contains(userInput[cursorPos - 1])) {
-              // Replace the existing operator if there's already one at the cursor position
-              userInput =
-                  '${userInput.substring(0, cursorPos - 1)}-${userInput.substring(cursorPos)}';
-            }
-          }
-        }
-
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
         break;
 
       case 12: // 1
-        setOpFalse();
-        userInput =
-            '${userInput.substring(0, cursorPos)}1${userInput.substring(cursorPos)}';
-        cursorPos++;
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
-          inputOutputClear();
-          _controller.text = '';
-          _controller.text = '1';
-          userInput += '1';
-          eqPress = true;
-        } else {}
-        if (userInput.contains('+') ||
-            userInput.contains('-') ||
-            userInput.contains('x') ||
-            userInput.contains('÷')) {
-          onEqualPress();
-        }
-        break;
-
-      case 13: //2
-
-        setOpFalse();
-        userInput =
-            '${userInput.substring(0, cursorPos)}2${userInput.substring(cursorPos)}';
-        cursorPos++;
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
-          inputOutputClear();
-          _controller.text = '';
-          _controller.text = '2';
-          userInput += '2';
-          eqPress = true;
-        } else {}
-        if (userInput.contains('+') ||
-            userInput.contains('-') ||
-            userInput.contains('x') ||
-            userInput.contains('÷')) {
-          onEqualPress();
-        }
+        operandCode('1');
 
         break;
-      case 14: //3
+      case 13: // 2
+        operandCode('2');
 
-        setOpFalse();
-        userInput =
-            '${userInput.substring(0, cursorPos)}3${userInput.substring(cursorPos)}';
-        cursorPos++;
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        if (outPut.isNotEmpty && userInput.isNotEmpty && !eqPress) {
-          inputOutputClear();
-          _controller.text = '';
-          _controller.text = '3';
-          userInput += '3';
-          eqPress = true;
-        } else {}
-        if (userInput.contains('+') ||
-            userInput.contains('-') ||
-            userInput.contains('x') ||
-            userInput.contains('÷')) {
-          onEqualPress();
-        }
         break;
-      case 15: //+
-        dotPress = false;
-        if (outPut.isNotEmpty) {
-          // userInput = '$outPut+';
-          // userInput = '$userInput+';
-     // cursorPos++ ;
-     //      outPut = '';
+      case 14: // 3
+        operandCode('3');
 
-          if (userInput.endsWith('+')) {
-          } else {
-            userInput =
-                '${userInput.substring(0, cursorPos)}+${userInput.substring(cursorPos)}';
-            cursorPos++;
-          }
-
-          addPress = true;
-        } else {
-          if (userInput.isNotEmpty) {
-            // Check if the cursor is at the beginning or if an operator already exists at the cursor position
-            if (cursorPos > 0 && !'+-x÷'.contains(userInput[cursorPos - 1])) {
-              // Insert the divide operator at the cursor position
-              userInput =
-                  '${userInput.substring(0, cursorPos)}+${userInput.substring(cursorPos)}';
-              cursorPos++;
-            } else if (cursorPos == 0) {
-              // If the cursor is at the beginning, insert the operator
-              userInput = '+$userInput';
-              cursorPos++;
-            } else if (cursorPos > 0 &&
-                '+-x÷'.contains(userInput[cursorPos - 1])) {
-              // Replace the existing operator if there's already one at the cursor position
-              userInput =
-                  '${userInput.substring(0, cursorPos - 1)}+${userInput.substring(cursorPos)}';
-            }
-          }
-        }
-
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
         break;
+      case 15: // +
+        opCode('+');
+
+        break;
+
 
       case 16: // 0
         setOpFalse();
-        userInput =
-            '${userInput.substring(0, cursorPos)}0${userInput.substring(cursorPos)}';
-        cursorPos++;
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
+
+        // Check if the input is empty or already '0'
+        if (_controller.text.isEmpty || _controller.text == '0') {
+          // Set input to '0' only once
+          userInput = '0';
+          cursorPos = 1;
+          _controller.text = userInput;
+          _controller.selection = TextSelection.fromPosition(TextPosition(offset: cursorPos));
+        } else {
+          // If not empty and not just '0', append '0'
+          userInput = '${userInput.substring(0, cursorPos)}0${userInput.substring(cursorPos)}';
+          cursorPos++;
+          _controller.text = userInput;
+          _controller.selection = TextSelection.fromPosition(TextPosition(offset: cursorPos));
+        }
+
+        // If output is not empty, clear input and output
         if (outPut.isNotEmpty && userInput.isNotEmpty) {
           inputOutputClear();
-          _controller.text = '';
-          _controller.text = '0';
-          userInput += '0';
+          userInput = '0';
+          cursorPos = 1;
+          _controller.text = userInput;
+          _controller.selection = TextSelection.fromPosition(TextPosition(offset: cursorPos));
         }
 
         break;
+
+
+
+
 
       case 17: // .
         // Check if dotPress is false and cursor is not at the start
@@ -729,7 +472,6 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
           bool dotExists =
               beforeCursor.split(RegExp(r'[\+\-\x÷]')).last.contains('.');
 
-          // Only insert dot if there's no existing dot in the current number
           if (!dotExists) {
             userInput = beforeCursor + '.' + afterCursor;
             cursorPos++;
@@ -755,20 +497,17 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
 
           outPut = a.toString();
         }
-
+        // print("object");
         _controller.text = userInput;
 
         break;
 
       default: // =
-        eqPress = false;
         hide = true;
         onEqualPress();
-        _controller.text = outPut;
-        userInput = '' ;
-        _controller.text = '';
-        // cursor = false;
+        // _controller.text = outPut;
 
+        // cursor = false;
         break;
     }
   }
@@ -782,14 +521,18 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
         )
         .replaceAll('÷', '/');
 
+    debugPrint("userInput $userInput");
+
     try {
       RegExp regex = RegExp(r"[+\-*/]$");
       if (regex.hasMatch(replace)) {
         replace = replace.substring(0, replace.length - 1);
       }
+      debugPrint("replace $replace");
 
       Parser p = Parser();
       Expression exp = p.parse(replace);
+      debugPrint("exp $exp");
 
       ContextModel contextModel = ContextModel();
       double evaluate = exp.evaluate(EvaluationType.REAL, contextModel);
@@ -807,13 +550,13 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
         userInput = outPut;
 
         userInput = '';
-        mulPress = true;
-        dividePress = true;
-        subPress = true;
-        addPress = true;
+        // mulPress = true;
+        // dividePress = true;
+        // subPress = true;
+        // addPress = true;
       } else {}
     } catch (e) {
-      debugPrint("exception $e");
+      outPut = e.toString() ;
     }
   }
 }
