@@ -11,6 +11,13 @@ class CalculatorHomeScreen extends StatefulWidget {
 }
 
 class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    scrollToEnd();
+  }
+
   var userInput = '';
   var outPut = '';
   final FocusNode focusNode = FocusNode();
@@ -44,21 +51,31 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
   bool dividePress = true;
   bool pPress = true;
   bool cursor = true;
-bool zeroPress = false;
+  bool zeroPress = false;
   bool isDarkModeEnabled = false;
   bool hide = false;
-  var outPutSize = 34.0;
+  bool ePress = false;
+  double outPutSize = 52;
+  double inputSize = 35;
+
   TextEditingController controller = TextEditingController();
+  TextEditingController Empcontroller = TextEditingController();
+
   final TextEditingController _controller = TextEditingController();
+  ScrollController _scrollController = ScrollController();
+
+  void scrollToEnd() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // themeMode: isDarkModeEnabled ? ThemeMode.dark : ThemeMode.light;
-    // ),
     return Scaffold(
       body: Column(
-        // crossAxisAlignment: CrossAxisAlignment.end,
-        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
             height: MediaQuery.of(context).size.height,
@@ -80,8 +97,6 @@ bool zeroPress = false;
               ),
             ),
             child: Column(
-              // crossAxisAlignment: CrossAxisAlignment.end,
-              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Stack(
@@ -91,39 +106,25 @@ bool zeroPress = false;
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           TextFormField(
+                            scrollPhysics: AlwaysScrollableScrollPhysics(),
+                            scrollController: _scrollController,
                             readOnly: true,
                             textAlign: TextAlign.right,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 30),
+                            style: TextStyle(
+                                color: Colors.white, fontSize: inputSize),
                             cursorColor: Colors.white,
                             showCursor: cursor,
-                            onTap: () {
-                              // FocusScope.of(context).requestFocus(focusNode);
-                            },
-                            controller: _controller,
+                            onTap: () {},
+                            controller:
+                                hide == false ? _controller : Empcontroller,
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                             ),
                             autofocus: true,
+                            onChanged: (value) {
+                              setState(() {});
+                            },
                           ),
-                          // Align(
-                          //   alignment: Alignment.bottomRight,
-                          //   child: Padding(
-                          //     padding:
-                          //     const EdgeInsets.only(right: 10, top: 150),
-                          //     child: SizedBox(
-                          //       height: 50,
-                          //       child: Text(
-                          //         userInput,
-                          //         style: const TextStyle(
-                          //             fontSize: 30, color: Colors.white),
-                          //         textAlign: TextAlign.right,
-                          //         overflow: TextOverflow.clip,
-                          //         maxLines: 1,
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
                           Padding(
                             padding: const EdgeInsets.only(
                               right: 10,
@@ -132,8 +133,8 @@ bool zeroPress = false;
                               height: 70,
                               child: Text(
                                 outPut,
-                                style: const TextStyle(
-                                    fontSize: 52, color: Colors.white),
+                                style: TextStyle(
+                                    fontSize: outPutSize, color: Colors.white),
                                 textAlign: TextAlign.right,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
@@ -206,7 +207,6 @@ bool zeroPress = false;
                                           ],
                               ),
                             ),
-                            // color: Colors.green,
                             child: Center(
                                 child: Text(
                               buttonText[index],
@@ -231,22 +231,160 @@ bool zeroPress = false;
     );
   }
 
-  void operandCode(String operand) {
+  String percentageOP = '';
+
+  String previousOperator = '';
+
+  void inputProcess(int index) {
+    hide = false;
+    cursor = true;
+
+    int cursorPos = _controller.selection.baseOffset;
+    if (cursorPos == -1) cursorPos = userInput.length;
+
+    switch (index) {
+      case 0: // AC
+
+        outPutSize = 52;
+        inputOutputClear();
+        ePress = false;
+        addPress = true;
+        subPress = true;
+        dividePress = true;
+        mulPress = true;
+        dotPress = false;
+
+        _controller.text = '';
+        break;
+
+      case 1: // C
+        dotPress = false;
+        if (cursorPos > 0) {
+          userInput = userInput.substring(0, cursorPos - 1) +
+              userInput.substring(cursorPos);
+          cursorPos--;
+        }
+
+        _controller.text = userInput;
+        _controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: cursorPos));
+
+        setOpFalse();
+
+        break;
+
+      case 2: // %
+        onPercentagePress();
+        break;
+
+        break;
+
+      case 3: // ÷÷÷
+        operatorPress('÷');
+
+        break;
+
+      case 4: // 7
+        operandPress('7');
+        break;
+
+      case 5: // 8
+        operandPress('8');
+        break;
+      case 6: // 9
+        operandPress('9');
+
+        break;
+      case 7: // x
+        operatorPress('x');
+
+        break;
+
+      case 8: // 4
+        operandPress('4');
+
+        break;
+
+      case 9: // 5
+        operandPress('5');
+
+        break;
+      case 10: //  6
+        operandPress('6');
+
+        break;
+      case 11: // -
+        operatorPress('-');
+
+        break;
+
+      case 12: // 1
+        operandPress('1');
+
+        break;
+      case 13: // 2
+        operandPress('2');
+
+        break;
+      case 14: // 3
+        operandPress('3');
+
+        break;
+      case 15: // +
+        operatorPress('+');
+
+        break;
+
+      case 16: // 0
+        onZeroPress();
+        break;
+
+      case 17: // .
+        onDotPress();
+
+        break;
+
+      case 18: // +-
+
+        plusMines();
+
+        break;
+      default: // =
+
+        hide = true;
+        onEqualPress();
+        ePress = true;
+        outPutSize = 60;
+
+        cursor = false;
+        break;
+    }
+  }
+
+  void operandPress(String operand) {
+
+    if(userInput.contains('.')  && userInput.length >3){}
+    else {
+    outPutSize = 52;
+    hide = false;
     int cursorPos = _controller.selection.baseOffset;
     if (cursorPos == -1) cursorPos = userInput.length;
 
     setOpFalse();
-    userInput =
-        '${userInput.substring(0, cursorPos)}$operand${userInput.substring(cursorPos)}';
-    cursorPos++;
-    _controller.text = userInput;
-    _controller.selection =
-        TextSelection.fromPosition(TextPosition(offset: cursorPos));
-    if (outPut.isNotEmpty && userInput.isNotEmpty) {
+
+    if (outPut.isNotEmpty && userInput.isNotEmpty && ePress == true) {
       inputOutputClear();
       _controller.text = '';
       _controller.text = operand;
       userInput += operand;
+      ePress = false;
+    } else {
+      userInput =
+          '${userInput.substring(0, cursorPos)}$operand${userInput.substring(cursorPos)}';
+      cursorPos++;
+      _controller.text = userInput;
+      _controller.selection =
+          TextSelection.fromPosition(TextPosition(offset: cursorPos));
     }
 
     if (userInput.contains('+') ||
@@ -254,55 +392,48 @@ bool zeroPress = false;
         userInput.contains('x') ||
         userInput.contains('÷')) {
       onEqualPress();
-    }
+    }}
+    scrollToEnd();
   }
 
-  void opCode(String op) {
+  void operatorPress(String op) {
+    outPutSize = 52;
+    hide = false;
     int cursorPos = _controller.selection.baseOffset;
     if (cursorPos == -1) cursorPos = userInput.length;
 
     dotPress = false;
-    if (outPut.isNotEmpty) {
 
-      userInput = '$outPut$op';
-      outPut = '';
-      addPress = true;
-      cursorPos = cursorPos +2;
-    } else {
-
-
-      if (userInput.isNotEmpty) {
-
-
+    {
+      if (ePress == true && outPut.isNotEmpty) {
+        userInput = outPut + op;
+        _controller.text = userInput;
+        cursorPos = userInput.length;
+        ePress = false;
+      } else if (userInput.isNotEmpty) {
         if (cursorPos > 0 && !'+-x÷'.contains(userInput[cursorPos - 1])) {
-
-
           userInput =
-              '${userInput.substring(0, cursorPos)}$op${userInput.substring(cursorPos)}';
-          cursorPos++;
+              '${userInput.substring(0, cursorPos)}$op${userInput.substring(cursorPos)}'; //
+          cursorPos += op.length;
         } else if (cursorPos == 0) {
-
-
           userInput = '$op$userInput';
-          cursorPos++;
+          cursorPos = op.length;
         } else if (cursorPos > 0 && '+-x÷'.contains(userInput[cursorPos - 1])) {
-
-
           userInput =
               '${userInput.substring(0, cursorPos - 1)}$op${userInput.substring(cursorPos)}';
+          cursorPos = cursorPos; // cursorPos remains the same
         }
       } else {
-
+        userInput = op;
+        cursorPos = op.length;
       }
     }
 
     _controller.text = userInput;
     _controller.selection =
         TextSelection.fromPosition(TextPosition(offset: cursorPos));
-
-
-
-
+    scrollToEnd();
+    onEqualPress();
   }
 
   void inputOutputClear() {
@@ -317,210 +448,154 @@ bool zeroPress = false;
     addPress = false;
   }
 
-  String previousOperator = '';
+  onPercentagePress() {
+    if (outPut.isNotEmpty) {
+      try {
+        double doubleValue = double.parse(outPut);
+        doubleValue = doubleValue * 0.01;
 
-  void inputProcess(int index) {
-    cursor = true;
+        percentageOP = doubleValue.toString();
+        _controller.text = '$percentageOP%';
+        outPut = percentageOP;
+        userInput = outPut;
+      } catch (e) {
+        log("Error: Invalid output");
+      }
+    }
+    if (userInput.isNotEmpty) {
+      try {
+        int lastPercentIndex = userInput.lastIndexOf('%');
+        if (lastPercentIndex != -1) {
+          String beforePercent = userInput.substring(0, lastPercentIndex);
+          String percentValue = userInput.substring(lastPercentIndex + 1);
+
+          Parser p = Parser();
+          Expression exp =
+              p.parse(beforePercent.replaceAll('×', '*').replaceAll('÷', '/'));
+          ContextModel cm = ContextModel();
+          double result = exp.evaluate(EvaluationType.REAL, cm);
+
+          double percentage = double.parse(percentValue) * 0.01;
+
+          double finalResult = result * percentage;
+
+          userInput = finalResult.toString();
+          _controller.text = userInput + '%';
+        } else {
+          double doubleValue = double.parse(userInput);
+          doubleValue = doubleValue * 0.01;
+
+          userInput = doubleValue.toString();
+          outPut = userInput;
+          _controller.text = userInput + '%';
+        }
+      } catch (e) {
+        log("Error: Invalid input");
+      }
+    }
+  }
+
+  onZeroPress() {
     int cursorPos = _controller.selection.baseOffset;
     if (cursorPos == -1) cursorPos = userInput.length;
 
-    switch (index) {
-      case 0: // AC
-        inputOutputClear();
+    setOpFalse();
 
-        addPress = true;
-        subPress = true;
-        dividePress = true;
-        mulPress = true;
-        dotPress = false;
-        _controller.text = '';
-        break;
-
-      case 1: // C
-        dotPress = false;
-        if (cursorPos > 0) {
-          // Remove the character before the cursor position
-          userInput = userInput.substring(0, cursorPos - 1) +
-              userInput.substring(cursorPos);
-          cursorPos--;
-          // dotPress = true;
-        }
-
-        // Update the controller text and selection
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
-
-        // Reset operator flags
-        setOpFalse();
-        // if (userInput.endsWith('.')) {
-        //   dotPress = false;
-        // }
-
-        break;
-
-      case 2: // %
-        if (outPut.isNotEmpty) {
-          double doubleValue = double.parse(outPut);
-          doubleValue = doubleValue * 0.01;
-          outPut = doubleValue.toString();
-          _controller.text = outPut;
-        } else if (userInput.isNotEmpty) {
-          double doubleValue = double.parse(userInput);
-          doubleValue = doubleValue * 0.01;
-          outPut = doubleValue.toString();
-          if (outPut.length > 5 && outPut.contains('.')) {
-            outPut = outPut.substring(0, outPut.length - 13);
-
-            log("length is ${outPut.length.toString()}");
-          } else {
-            outPut = doubleValue.toString();
-          }
-          _controller.text = outPut;
-        }
-
-        break;
-
-      case 3: // ÷÷÷
-        opCode('÷');
-
-        break;
-
-      case 4: // 7
-        operandCode('7');
-        break;
-
-      case 5: // 8
-        operandCode('8');
-        break;
-      case 6: // 9
-        operandCode('9');
-
-        break;
-      case 7: // x
-        opCode('x');
-
-        break;
-
-      case 8: // 4
-        operandCode('4');
-
-        break;
-
-      case 9: // 5
-        operandCode('5');
-
-        break;
-      case 10: //  6
-        operandCode('6');
-
-        break;
-      case 11: // -
-        opCode('-');
-
-        break;
-
-      case 12: // 1
-        operandCode('1');
-
-        break;
-      case 13: // 2
-        operandCode('2');
-
-        break;
-      case 14: // 3
-        operandCode('3');
-
-        break;
-      case 15: // +
-        opCode('+');
-
-        break;
-
-
-      case 16: // 0
-        setOpFalse();
-
-        // Check if the input is empty or already '0'
-        if (_controller.text.isEmpty || _controller.text == '0') {
-          // Set input to '0' only once
-          userInput = '0';
-          cursorPos = 1;
-          _controller.text = userInput;
-          _controller.selection = TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        } else {
-          // If not empty and not just '0', append '0'
-          userInput = '${userInput.substring(0, cursorPos)}0${userInput.substring(cursorPos)}';
-          cursorPos++;
-          _controller.text = userInput;
-          _controller.selection = TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        }
-
-        // If output is not empty, clear input and output
-        if (outPut.isNotEmpty && userInput.isNotEmpty) {
-          inputOutputClear();
-          userInput = '0';
-          cursorPos = 1;
-          _controller.text = userInput;
-          _controller.selection = TextSelection.fromPosition(TextPosition(offset: cursorPos));
-        }
-
-        break;
-
-
-
-
-
-      case 17: // .
-        // Check if dotPress is false and cursor is not at the start
-        if (!dotPress && cursorPos > 0) {
-          // Get the part of the userInput before the cursor
-          String beforeCursor = userInput.substring(0, cursorPos);
-          // Get the part of the userInput after the cursor
-          String afterCursor = userInput.substring(cursorPos);
-
-          // Check if there's already a dot in the current number segment
-          bool dotExists =
-              beforeCursor.split(RegExp(r'[\+\-\x÷]')).last.contains('.');
-
-          if (!dotExists) {
-            userInput = beforeCursor + '.' + afterCursor;
-            cursorPos++;
-            dotPress = true;
-          }
-        } else if (!dotPress && cursorPos == 0) {
-          // If the cursor is at the start, allow inserting a leading zero with dot
-          userInput = '0.' + userInput;
-          cursorPos += 2; // Move cursor after the inserted '0.'
-          dotPress = true;
-        }
-
-        _controller.text = userInput;
-        _controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: cursorPos));
-
-        break;
-
-      case 18: // +-
-        if (outPut.isNotEmpty) {
-          double a = double.parse(outPut);
-          a = -1.0 * a;
-
-          outPut = a.toString();
-        }
-        // print("object");
-        _controller.text = userInput;
-
-        break;
-
-      default: // =
-        hide = true;
-        onEqualPress();
-        // _controller.text = outPut;
-
-        // cursor = false;
-        break;
+    if (_controller.text.isEmpty || _controller.text == '0') {
+      userInput = '0';
+      cursorPos = 1;
+      _controller.text = userInput;
+      _controller.selection =
+          TextSelection.fromPosition(TextPosition(offset: cursorPos));
+    } else {
+      userInput =
+          '${userInput.substring(0, cursorPos)}0${userInput.substring(cursorPos)}';
+      cursorPos++;
+      _controller.text = userInput;
+      _controller.selection =
+          TextSelection.fromPosition(TextPosition(offset: cursorPos));
     }
+
+    if (outPut.isNotEmpty && userInput.isNotEmpty && ePress == true) {
+      inputOutputClear();
+      userInput = '0';
+      cursorPos = 1;
+      _controller.text = userInput;
+      _controller.selection =
+          TextSelection.fromPosition(TextPosition(offset: cursorPos));
+    }
+    if (userInput.contains('+') ||
+        userInput.contains('-') ||
+        userInput.contains('x') ||
+        userInput.contains('÷')) {
+      onEqualPress();
+    }
+  }
+
+  onDotPress() {
+    int cursorPos = _controller.selection.baseOffset;
+    if (cursorPos == -1) cursorPos = userInput.length;
+
+    if (!dotPress && cursorPos > 0) {
+      String beforeCursor = userInput.substring(0, cursorPos);
+
+      String afterCursor = userInput.substring(cursorPos);
+
+      bool dotExists =
+          beforeCursor.split(RegExp(r'[\+\-\x÷]')).last.contains('.');
+
+      if (!dotExists) {
+        userInput = beforeCursor + '.' + afterCursor;
+        cursorPos++;
+        dotPress = true;
+      }
+    } else if (!dotPress && cursorPos == 0) {
+      userInput = '0.' + userInput;
+      cursorPos += 2;
+      dotPress = true;
+    }
+
+    _controller.text = userInput;
+    _controller.selection =
+        TextSelection.fromPosition(TextPosition(offset: cursorPos));
+    if (userInput.contains('+') ||
+        userInput.contains('-') ||
+        userInput.contains('x') ||
+        userInput.contains('÷')) {
+      onEqualPress();
+    }
+  }
+
+  plusMines() {
+    if (userInput.isNotEmpty) {
+      double a;
+      try {
+        Parser p = Parser();
+        Expression exp =
+            p.parse(userInput.replaceAll('×', '*').replaceAll('÷', '/'));
+        ContextModel cm = ContextModel();
+        a = exp.evaluate(EvaluationType.REAL, cm);
+
+        a = -1.0 * a;
+        userInput = a.toString();
+
+        log(a.toString());
+      } catch (e) {
+        log("Error: Invalid input");
+      }
+    }
+
+    if (outPut.isNotEmpty) {
+      try {
+        double b = double.parse(outPut);
+        b = -1.0 * b;
+        outPut = b.toString();
+      } catch (e) {
+        log("Error");
+      }
+    }
+
+    _controller.text = userInput;
   }
 
   void onEqualPress() {
@@ -532,14 +607,11 @@ bool zeroPress = false;
         )
         .replaceAll('÷', '/');
 
-    debugPrint("userInput $userInput");
-
     try {
       RegExp regex = RegExp(r"[+\-*/]$");
       if (regex.hasMatch(replace)) {
         replace = replace.substring(0, replace.length - 1);
       }
-      debugPrint("replace $replace");
 
       Parser p = Parser();
       Expression exp = p.parse(replace);
@@ -549,11 +621,9 @@ bool zeroPress = false;
       double evaluate = exp.evaluate(EvaluationType.REAL, contextModel);
 
       if (evaluate % 1 == 0) {
-        outPut =
-            evaluate.toInt().toString(); // Convert to int and then to string
+        outPut = evaluate.toInt().toString();
       } else {
-        outPut =
-            evaluate.toStringAsFixed(2); // Limiting output to 2 decimal places
+        outPut = evaluate.toStringAsFixed(2);
       }
       if (outPut.endsWith('.0')) {
         outPut = outPut.substring(0, outPut.length - 2);
@@ -561,13 +631,9 @@ bool zeroPress = false;
         userInput = outPut;
 
         userInput = '';
-        // mulPress = true;
-        // dividePress = true;
-        // subPress = true;
-        // addPress = true;
       } else {}
-    } catch (e) {
-      outPut = e.toString() ;
+    } on Exception catch (e) {
+      outPut = 'Error';
     }
   }
 }
