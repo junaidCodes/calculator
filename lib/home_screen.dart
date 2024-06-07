@@ -248,6 +248,13 @@ bool zeroPress = false;
       _controller.text = operand;
       userInput += operand;
     }
+
+    if (userInput.contains('+') ||
+        userInput.contains('-') ||
+        userInput.contains('x') ||
+        userInput.contains('÷')) {
+      onEqualPress();
+    }
   }
 
   void opCode(String op) {
@@ -266,21 +273,21 @@ bool zeroPress = false;
 
       if (userInput.isNotEmpty) {
 
-        // Check if the cursor is at the beginning or if an operator already exists at the cursor position
+
         if (cursorPos > 0 && !'+-x÷'.contains(userInput[cursorPos - 1])) {
 
-          // Insert the divide operator at the cursor position
+
           userInput =
               '${userInput.substring(0, cursorPos)}$op${userInput.substring(cursorPos)}';
           cursorPos++;
         } else if (cursorPos == 0) {
 
-          // If the cursor is at the beginning, insert the operator
+
           userInput = '$op$userInput';
           cursorPos++;
         } else if (cursorPos > 0 && '+-x÷'.contains(userInput[cursorPos - 1])) {
 
-          // Replace the existing operator if there's already one at the cursor position
+
           userInput =
               '${userInput.substring(0, cursorPos - 1)}$op${userInput.substring(cursorPos)}';
         }
@@ -292,6 +299,10 @@ bool zeroPress = false;
     _controller.text = userInput;
     _controller.selection =
         TextSelection.fromPosition(TextPosition(offset: cursorPos));
+
+
+
+
   }
 
   void inputOutputClear() {
