@@ -57,6 +57,7 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
   bool ePress = false;
   double outPutSize = 52;
   double inputSize = 35;
+  bool oPress = true ;
 
   TextEditingController controller = TextEditingController();
   TextEditingController Empcontroller = TextEditingController();
@@ -87,17 +88,18 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
                 end: Alignment.bottomLeft,
                 colors: !isDarkModeEnabled
                     ? [
-                        const Color(0xffe98a7f),
-                        const Color(0xffe98a7f),
-                      ]
+                  const Color(0xffe98a7f),
+                  const Color(0xffe98a7f),
+                ]
                     : [
-                        Colors.blueAccent,
-                        const Color(0xff2d3875),
-                      ],
+                  Colors.blueAccent,
+                  const Color(0xff2d3875),
+                ],
               ),
             ),
             child: Column(
               children: [
+
                 Expanded(
                   child: Stack(
                     children: [
@@ -116,7 +118,7 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
                             showCursor: cursor,
                             onTap: () {},
                             controller:
-                                hide == false ? _controller : Empcontroller,
+                            hide == false ? _controller : Empcontroller,
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                             ),
@@ -165,59 +167,67 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
                       shrinkWrap: false,
                       itemCount: 20,
                       gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                      const SliverGridDelegateWithMaxCrossAxisExtent(
                         maxCrossAxisExtent: 100,
                         mainAxisExtent: 72,
                         crossAxisSpacing: 2,
                         mainAxisSpacing: 2,
                       ),
                       itemBuilder: (BuildContext context, index) {
-                        return InkWell(
-                          onTap: () {
-                            inputProcess(index);
+                        return Container(
+                          // decoration: const BoxDecoration(color: Colors.red),
+                          child: Material(color: Colors.transparent,
+                            child: InkWell(
 
-                            setState(() {});
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              // border:
-                              // Border.all(color: Colors.green, width: 1),
-                              gradient: LinearGradient(
-                                begin: Alignment.topRight,
-                                end: Alignment.bottomLeft,
-                                colors: !isDarkModeEnabled
-                                    ? index == 19
+                              highlightColor: Colors.green,
+
+                              onTap: () {
+                                inputProcess(index);
+
+                                setState(() {});
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  // border:
+                                  // Border.all(color: Colors.green, width: 1),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topRight,
+                                    end: Alignment.bottomLeft,
+                                    colors: !isDarkModeEnabled
+                                        ? index == 19
                                         ? [
-                                            Colors.transparent,
-                                            Colors.transparent,
-                                          ]
+                                      Colors.transparent,
+                                      Colors.transparent,
+                                    ]
                                         : [
-                                            Colors.white,
-                                            Colors.white,
-                                          ]
-                                    : index == 19
+                                      Colors.white,
+                                      Colors.white,
+                                    ]
+                                        : index == 19
                                         ? [
-                                            Colors.transparent,
-                                            Colors.transparent,
-                                          ]
+                                      Colors.transparent,
+                                      Colors.transparent,
+                                    ]
                                         : [
-                                            const Color(0xff283060),
-                                            const Color(0xff283068),
-                                          ],
+                                      const Color(0xff283060),
+                                      const Color(0xff283068),
+                                    ],
+                                  ),
+                                ),
+                                child: Center(
+                                    child: Text(
+                                      buttonText[index],
+                                      style: TextStyle(
+                                          color: !isDarkModeEnabled
+                                              ? index == 19
+                                              ? Colors.white
+                                              : Colors.black.withOpacity(0.6)
+                                              : Colors.white,
+                                          fontSize: 40),
+                                    )),
                               ),
                             ),
-                            child: Center(
-                                child: Text(
-                              buttonText[index],
-                              style: TextStyle(
-                                  color: !isDarkModeEnabled
-                                      ? index == 19
-                                          ? Colors.white
-                                          : Colors.black.withOpacity(0.6)
-                                      : Colors.white,
-                                  fontSize: 40),
-                            )),
                           ),
                         );
                         //
@@ -362,42 +372,50 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
   }
 
   void operandPress(String operand) {
-
-
-    outPutSize = 52;
-    hide = false;
     int cursorPos = _controller.selection.baseOffset;
     if (cursorPos == -1) cursorPos = userInput.length;
 
-    setOpFalse();
 
     if (outPut.isNotEmpty && userInput.isNotEmpty && ePress == true) {
+      log("a");
       inputOutputClear();
       _controller.text = '';
       _controller.text = operand;
       userInput += operand;
       ePress = false;
-    } else {
-      userInput =
-          '${userInput.substring(0, cursorPos)}$operand${userInput.substring(cursorPos)}';
-      cursorPos++;
-      _controller.text = userInput;
-      _controller.selection =
-          TextSelection.fromPosition(TextPosition(offset: cursorPos));
+    }
+    else {
+
+    // Check if adding another digit exceeds the limit of 3 decimal places
+    if (dotPress && cursorPos > 0) {
+      String beforeCursor = userInput.substring(0, cursorPos);
+      String afterCursor = userInput.substring(cursorPos);
+
+      // Find the last number being entered
+      String lastNumber = beforeCursor.split(RegExp(r'[+\-x÷]')).last;
+      int decimalIndex = lastNumber.indexOf('.');
+
+      // If the last number has a decimal point and we have more than 3 digits after it, return without adding the new digit
+      if (decimalIndex != -1 && lastNumber.substring(decimalIndex + 1).length >= 3) {
+        return;
+      }
     }
 
-    if (userInput.contains('+') ||
-        userInput.contains('-') ||
-        userInput.contains('x') ||
-        userInput.contains('÷')) {
-      onEqualPress();
-    }
+    userInput = userInput.substring(0, cursorPos) + operand + userInput.substring(cursorPos);
+    _controller.text = userInput;
+    _controller.selection = TextSelection.fromPosition(TextPosition(offset: cursorPos + 1));
     scrollToEnd();
-  }
+    onEqualPress();
+  }}
+
+
 
   void operatorPress(String op) {
 
+    if(userInput.isEmpty){} else {
 
+    oPress = true ;
+    log("message$userInput");
     outPutSize = 52;
     hide = false;
     int cursorPos = _controller.selection.baseOffset;
@@ -414,14 +432,14 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
       } else if (userInput.isNotEmpty) {
         if (cursorPos > 0 && !'+-x÷'.contains(userInput[cursorPos - 1])) {
           userInput =
-              '${userInput.substring(0, cursorPos)}$op${userInput.substring(cursorPos)}'; //
+          '${userInput.substring(0, cursorPos)}$op${userInput.substring(cursorPos)}'; //
           cursorPos += op.length;
         } else if (cursorPos == 0) {
           userInput = '$op$userInput';
           cursorPos = op.length;
         } else if (cursorPos > 0 && '+-x÷'.contains(userInput[cursorPos - 1])) {
           userInput =
-              '${userInput.substring(0, cursorPos - 1)}$op${userInput.substring(cursorPos)}';
+          '${userInput.substring(0, cursorPos - 1)}$op${userInput.substring(cursorPos)}';
           cursorPos = cursorPos; // cursorPos remains the same
         }
       } else {
@@ -435,7 +453,7 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
         TextSelection.fromPosition(TextPosition(offset: cursorPos));
     scrollToEnd();
     onEqualPress();
-  }
+  }}
 
   void inputOutputClear() {
     userInput = '';
@@ -449,50 +467,161 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
     addPress = false;
   }
 
-  onPercentagePress() {
-    if (outPut.isNotEmpty) {
-      try {
-        double doubleValue = double.parse(outPut);
-        doubleValue = doubleValue * 0.01;
+  double evaluateExpression(String expressionString) {
+    String replace = expressionString;
+    replace = expressionString
+        .replaceAll(
+      'x',
+      '*',
+    )
+        .replaceAll('÷', '/');
+    // Create a parser
+    final parser = Parser();
+    // Parse the expression
+    final expression = parser.parse(replace);
 
-        percentageOP = doubleValue.toString();
-        _controller.text = '$percentageOP%';
-        outPut = percentageOP;
+    // Evaluate the expression using a context model
+    final contextModel = ContextModel();
+    final result = expression.evaluate(EvaluationType.REAL, contextModel);
+
+    // Return the result as a double
+    return result;
+  }
+
+  String getExpressionBeforeLastOperand(String input) {
+    // Split the string at the percentage sign
+    final parts = input.split('%');
+
+    // Check if there's a part before the percentage sign
+    if (parts.length > 1) {
+      // Get the part before the percentage sign
+      final beforePercentage = parts[0];
+
+      // List of operators to check
+      final operators = ['+', '-', '*', '/', 'x', '÷'];
+
+      // Find the index of the last operator before the percentage sign
+      int lastOperatorIndex = -1;
+      for (int i = 0; i < beforePercentage.length; i++) {
+        if (operators.contains(beforePercentage[i])) {
+          lastOperatorIndex = i;
+        }
+      }
+
+      // Extract the expression before the last operator
+      if (lastOperatorIndex != -1) {
+        return beforePercentage.substring(0, lastOperatorIndex + 1);
+      } else {
+        // If no operator is found, return the entire string before the percentage
+        return beforePercentage;
+      }
+    } else {
+      // If there's no percentage sign, return the input as it is
+      return input;
+    }
+  }
+
+  String removeTrailingOperator(String input) {
+    // List of operators to check
+    final operators = ['+', '-', '*', '/', 'x', '÷'];
+
+    // Check if the last character is an operator
+    if (input.isNotEmpty && operators.contains(input[input.length - 1])) {
+      // Remove the last character if it is an operator
+      return input.substring(0, input.length - 1);
+    } else {
+      // Return the input as it is if the last character is not an operator
+      return input;
+    }
+  }
+
+  void onPercentagePress() {
+    if (!userInput.contains('+') &&
+        !userInput.contains('-') &&
+        !userInput.contains('x') &&
+        !userInput.contains('÷')) {
+      double doubleValue = double.parse(userInput);
+      doubleValue = doubleValue * 0.01;
+
+      percentageOP = doubleValue.toString();
+      _controller.text = '$percentageOP%';
+      outPut = percentageOP;
+      userInput = outPut;
+    } else {
+      userInput = userInput + '%';
+      _controller.text = userInput;
+      final result = getNumberBeforePercentage(userInput);
+      double numberBeforePercentaage = double.parse(result);
+
+      log("ff $numberBeforePercentaage");
+
+      final expResult = getExpressionBeforeLastOperand(userInput);
+      log("sttringResult $expResult");
+      String refinedExp = removeTrailingOperator(expResult);
+      log("refined res $refinedExp");
+
+      double getResult = evaluateExpression(refinedExp);
+      log("getResult $getResult");
+      if (userInput.contains('x') && !userInput.contains('+')) {
+        double getPercentage = numberBeforePercentaage / 100 * getResult;
+        outPut = getPercentage.toString();
         userInput = outPut;
-      } catch (e) {
-        log("Error: Invalid output");
+      } else if (userInput.contains('÷') &&
+          !userInput.contains('+') &&
+          !userInput.contains('-') &&
+          !userInput.contains('x')) {
+        double percentage = numberBeforePercentaage / 100;
+        double getPercentage = getResult / percentage;
+        outPut = getPercentage.toString();
+        userInput = outPut;
+      } else if (userInput.contains('-') &&
+          !userInput.contains('+') &&
+          !userInput.contains('÷') &&
+          !userInput.contains('x')) {
+        double calPercent = numberBeforePercentaage / 100 * 100;
+        double getPercentage = getResult - calPercent;
+        outPut = getPercentage.toString();
+        userInput = outPut;
+      } else {
+        double getPercentage =
+            numberBeforePercentaage / 100 * getResult + getResult;
+        outPut = getPercentage.toString();
+        userInput = outPut;
       }
     }
-    if (userInput.isNotEmpty) {
-      try {
-        int lastPercentIndex = userInput.lastIndexOf('%');
-        if (lastPercentIndex != -1) {
-          String beforePercent = userInput.substring(0, lastPercentIndex);
-          String percentValue = userInput.substring(lastPercentIndex + 1);
+  }
 
-          Parser p = Parser();
-          Expression exp =
-              p.parse(beforePercent.replaceAll('×', '*').replaceAll('÷', '/'));
-          ContextModel cm = ContextModel();
-          double result = exp.evaluate(EvaluationType.REAL, cm);
+  String getNumberBeforePercentage(String input) {
+    // Split the string at the percentage sign
+    final parts = input.split('%');
 
-          double percentage = double.parse(percentValue) * 0.01;
+    // Check if there's a part before the percentage sign
+    if (parts.length > 1) {
+      // Get the part before the percentage sign
+      final beforePercentage = parts[0];
+      log(beforePercentage);
+      // List of operators to check
+      final operators = ['+', '-', '*', '/', 'x', '÷'];
 
-          double finalResult = result * percentage;
-
-          userInput = finalResult.toString();
-          _controller.text = userInput + '%';
-        } else {
-          double doubleValue = double.parse(userInput);
-          doubleValue = doubleValue * 0.01;
-
-          userInput = doubleValue.toString();
-          outPut = userInput;
-          _controller.text = userInput + '%';
+      // Find the index of the last operator before the percentage sign
+      int lastOperatorIndex = -1;
+      for (int i = 0; i < beforePercentage.length; i++) {
+        if (operators.contains(beforePercentage[i])) {
+          lastOperatorIndex = i;
         }
-      } catch (e) {
-        log("Error: Invalid input");
       }
+
+      // Extract the number after the last operator
+      if (lastOperatorIndex != -1) {
+        log(beforePercentage.substring(lastOperatorIndex + 1));
+        return beforePercentage.substring(lastOperatorIndex + 1);
+
+        // return beforePercentage.substring(lastOperatorIndex + 1);
+      } else {
+        return beforePercentage;
+      }
+    } else {
+      return '';
     }
   }
 
@@ -510,7 +639,7 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
           TextSelection.fromPosition(TextPosition(offset: cursorPos));
     } else {
       userInput =
-          '${userInput.substring(0, cursorPos)}0${userInput.substring(cursorPos)}';
+      '${userInput.substring(0, cursorPos)}0${userInput.substring(cursorPos)}';
       cursorPos++;
       _controller.text = userInput;
       _controller.selection =
@@ -530,42 +659,32 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
         userInput.contains('x') ||
         userInput.contains('÷')) {
       onEqualPress();
+      scrollToEnd();
     }
   }
 
-  onDotPress() {
+
+
+  void onDotPress() {
     int cursorPos = _controller.selection.baseOffset;
     if (cursorPos == -1) cursorPos = userInput.length;
 
-    if (!dotPress && cursorPos > 0) {
-      String beforeCursor = userInput.substring(0, cursorPos);
+    String beforeCursor = userInput.substring(0, cursorPos);
+    String afterCursor = userInput.substring(cursorPos);
 
-      String afterCursor = userInput.substring(cursorPos);
+    // Find the last number being entered
+    String lastNumber = beforeCursor.split(RegExp(r'[+\-x÷]')).last;
 
-      bool dotExists =
-          beforeCursor.split(RegExp(r'[\+\-\x÷]')).last.contains('.');
-
-      if (!dotExists) {
-        userInput = beforeCursor + '.' + afterCursor;
-        cursorPos++;
-        dotPress = true;
-      }
-    } else if (!dotPress && cursorPos == 0) {
-      userInput = '0.' + userInput;
-      cursorPos += 2;
+    // Check if the last number already has a decimal point
+    if (!lastNumber.contains('.')) {
+      userInput = beforeCursor + '.' + afterCursor;
+      _controller.text = userInput;
+      _controller.selection = TextSelection.fromPosition(TextPosition(offset: cursorPos + 1));
       dotPress = true;
     }
-
-    _controller.text = userInput;
-    _controller.selection =
-        TextSelection.fromPosition(TextPosition(offset: cursorPos));
-    if (userInput.contains('+') ||
-        userInput.contains('-') ||
-        userInput.contains('x') ||
-        userInput.contains('÷')) {
-      onEqualPress();
-    }
+    scrollToEnd();
   }
+
 
   plusMines() {
     if (userInput.isNotEmpty) {
@@ -573,7 +692,7 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
       try {
         Parser p = Parser();
         Expression exp =
-            p.parse(userInput.replaceAll('×', '*').replaceAll('÷', '/'));
+        p.parse(userInput.replaceAll('×', '*').replaceAll('÷', '/'));
         ContextModel cm = ContextModel();
         a = exp.evaluate(EvaluationType.REAL, cm);
 
@@ -592,7 +711,7 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
         b = -1.0 * b;
         outPut = b.toString();
       } catch (e) {
-        log("Error");
+
       }
     }
 
@@ -603,9 +722,9 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
     String replace = userInput;
     replace = userInput
         .replaceAll(
-          'x',
-          '*',
-        )
+      'x',
+      '*',
+    )
         .replaceAll('÷', '/');
 
     try {
@@ -634,7 +753,7 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
         userInput = '';
       } else {}
     } on Exception catch (e) {
-      outPut = 'Error';
+      // outPut = 'Errror';
     }
   }
 }
