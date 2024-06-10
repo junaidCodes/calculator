@@ -363,8 +363,7 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
 
   void operandPress(String operand) {
 
-    if(userInput.contains('.')  && userInput.length >3){}
-    else {
+
     outPutSize = 52;
     hide = false;
     int cursorPos = _controller.selection.baseOffset;
@@ -392,11 +391,13 @@ class _CalculatorHomeScreenState extends State<CalculatorHomeScreen> {
         userInput.contains('x') ||
         userInput.contains('÷')) {
       onEqualPress();
-    }}
+    }
     scrollToEnd();
   }
 
   void operatorPress(String op) {
+
+
     outPutSize = 52;
     hide = false;
     int cursorPos = _controller.selection.baseOffset;
