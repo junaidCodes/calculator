@@ -24,6 +24,11 @@ if (flutterVersionName == null) {
 }
 
 android {
+    buildTypes {
+        release {
+            crunchPngs false // or true
+        }
+    }
     namespace = "com.example.calculator"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
